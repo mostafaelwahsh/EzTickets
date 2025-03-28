@@ -7,14 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\**" />
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="Models\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="Models\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="DTO\" />
     <Folder Include="Controllers\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
