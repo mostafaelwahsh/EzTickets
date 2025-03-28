@@ -5,6 +5,10 @@ VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzTicket", "EzTicket\EzTicket.csproj", "{6EC184B8-E90A-4DD2-81FA-CAF4F85483FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Model\Models.csproj", "{46E9677B-5CDB-459F-B68D-E57DBA566286}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{DF1A8948-BF26-41CC-91A1-7A07AA384B68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{6EC184B8-E90A-4DD2-81FA-CAF4F85483FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EC184B8-E90A-4DD2-81FA-CAF4F85483FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EC184B8-E90A-4DD2-81FA-CAF4F85483FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46E9677B-5CDB-459F-B68D-E57DBA566286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46E9677B-5CDB-459F-B68D-E57DBA566286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46E9677B-5CDB-459F-B68D-E57DBA566286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46E9677B-5CDB-459F-B68D-E57DBA566286}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF1A8948-BF26-41CC-91A1-7A07AA384B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF1A8948-BF26-41CC-91A1-7A07AA384B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF1A8948-BF26-41CC-91A1-7A07AA384B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF1A8948-BF26-41CC-91A1-7A07AA384B68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
