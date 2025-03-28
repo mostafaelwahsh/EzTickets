@@ -26,7 +26,7 @@ namespace Models
         [ForeignKey("User")]
         public string? UserID { get; set; } // Nullable because not all tickets may be sold
         public ApplicationUser? User { get; set; }
-        public TicketType TicketType { get; set; } = TicketType.GeneralAdmission;
+        public TicketType TicketType { get; set; } = TicketType.Regular;
         public decimal Price { get; set; }
         public DateTime? PurchaseDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
