@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EzTicket.Migrations
 {
     /// <inheritdoc />
-    public partial class first : Migration
+    public partial class EZTicket : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,7 +52,7 @@ namespace EzTicket.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Courses",
+                name: "Category",
                 columns: table => new
                 {
                     CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -60,7 +60,7 @@ namespace EzTicket.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Courses", x => x.CategoryId);
+                    table.PrimaryKey("PK_Category", x => x.CategoryId);
                 });
 
             migrationBuilder.CreateTable(
@@ -262,21 +262,20 @@ namespace EzTicket.Migrations
                 columns: table => new
                 {
                     EventId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    EventID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CourseContents", x => x.EventId);
+                    table.PrimaryKey("PK_CourseContents", x => new { x.EventId, x.CategoryId });
                     table.ForeignKey(
-                        name: "FK_CourseContents_Courses_CategoryId",
+                        name: "FK_CourseContents_Category_CategoryId",
                         column: x => x.CategoryId,
-                        principalTable: "Courses",
+                        principalTable: "Category",
                         principalColumn: "CategoryId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CourseContents_Plugins_EventID",
-                        column: x => x.EventID,
+                        name: "FK_CourseContents_Plugins_EventId",
+                        column: x => x.EventId,
                         principalTable: "Plugins",
                         principalColumn: "EventID",
                         onDelete: ReferentialAction.Cascade);
@@ -366,11 +365,6 @@ namespace EzTicket.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseContents_EventID",
-                table: "CourseContents",
-                column: "EventID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Enrollments_UserID",
                 table: "Enrollments",
                 column: "UserID");
@@ -437,7 +431,7 @@ namespace EzTicket.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Courses");
+                name: "Category");
 
             migrationBuilder.DropTable(
                 name: "Enrollments");

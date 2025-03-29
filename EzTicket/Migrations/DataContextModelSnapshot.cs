@@ -235,7 +235,7 @@ namespace EzTicket.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("Models.Event", b =>
@@ -306,18 +306,11 @@ namespace EzTicket.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CategoryId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("EventID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("EventId");
+                    b.HasKey("EventId", "CategoryId");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("EventID");
 
                     b.ToTable("CourseContents");
                 });
@@ -531,7 +524,7 @@ namespace EzTicket.Migrations
 
                     b.HasOne("Models.Event", "Event")
                         .WithMany("EventCategories")
-                        .HasForeignKey("EventID")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
