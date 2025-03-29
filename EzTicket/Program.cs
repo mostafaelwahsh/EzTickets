@@ -1,4 +1,7 @@
 
+using Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace EzTicket
 {
     public class Program
@@ -13,6 +16,10 @@ namespace EzTicket
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Register DataContext with Connection String
+            builder.Services.AddDbContext<DataContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("CS")));
 
             var app = builder.Build();
 
