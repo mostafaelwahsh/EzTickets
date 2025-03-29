@@ -11,8 +11,8 @@ namespace Data
 
         // DbSet properties for your entities
         public DbSet<Category> Category { get; set; }
-        public DbSet<Event> Plugins { get; set; }
-        public DbSet<EventCategory> CourseContents { get; set; }
+        public DbSet<Event> Event { get; set; }
+        public DbSet<EventCategory> EventCategory { get; set; }
         public DbSet<Order> Enrollments { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Ticket> ShoppingCarts { get; set; }
