@@ -19,7 +19,9 @@ namespace EzTicket
 
             // Register DataContext with Connection String
             builder.Services.AddDbContext<DataContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("CS")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("CS"),
+                b => b.MigrationsAssembly("EzTicket") // Set the migrations assembly
+                ));
 
             var app = builder.Build();
 
