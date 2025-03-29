@@ -1,6 +1,6 @@
 ﻿namespace EzTickets.Repository
 {
-    public interface ICategoryRepository<T>
+    public interface IRepository<T>
     {
         List<T> GetAll();
         T GetById(int Id);

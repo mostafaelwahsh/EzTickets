@@ -2,7 +2,7 @@
 
 namespace EzTickets.Repository
 {
-    public interface IEventRepository : ICategoryRepository<Event>
+    public interface IEventRepository : IRepository<Event>
     {
     }
 }
