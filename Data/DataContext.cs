@@ -13,9 +13,9 @@ namespace Data
         public DbSet<Category> Category { get; set; }
         public DbSet<Event> Event { get; set; }
         public DbSet<EventCategory> EventCategory { get; set; }
-        public DbSet<Order> Enrollments { get; set; }
-        public DbSet<Payment> Payments { get; set; }
-        public DbSet<Ticket> ShoppingCarts { get; set; }
+        public DbSet<Order> Order { get; set; }
+        public DbSet<Payment> Payment { get; set; }
+        public DbSet<Ticket> Ticket { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
