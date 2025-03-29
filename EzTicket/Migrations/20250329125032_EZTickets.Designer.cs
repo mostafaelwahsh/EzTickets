@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EzTicket.Migrations
+namespace EzTickets.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250329121704_EZTicket")]
-    partial class EZTicket
+    [Migration("20250329125032_EZTickets")]
+    partial class EZTickets
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

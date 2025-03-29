@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EzTicket.Migrations
+namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class EZTicket : Migration
+    public partial class EZTickets : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

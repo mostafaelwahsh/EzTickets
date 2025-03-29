@@ -17,8 +17,8 @@ public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-        optionsBuilder.UseSqlServer(config.GetConnectionString("CS"), 
-            sqlOptions => sqlOptions.MigrationsAssembly("EzTicket"));
+        optionsBuilder.UseSqlServer(config.GetConnectionString("CS") 
+          );
         return new DataContext(optionsBuilder.Options);
 
     }

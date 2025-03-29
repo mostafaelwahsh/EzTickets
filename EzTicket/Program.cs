@@ -20,7 +20,7 @@ namespace EzTicket
             // Register DataContext with Connection String
             builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CS"),
-        sqlOptions => sqlOptions.MigrationsAssembly("EzTicket") // Ensure migrations are stored in 'Data' project
+        sqlOptions => sqlOptions.MigrationsAssembly("EzTickets") // Ensure migrations are stored in 'Data' project
     ));
 
             var app = builder.Build();

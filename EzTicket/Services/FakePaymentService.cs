@@ -1,5 +1,5 @@
 ﻿
-namespace EzTicket.Services
+namespace EzTickets.Services
 {
     public class FakePaymentService
     {

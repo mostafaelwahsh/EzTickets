@@ -3,7 +3,7 @@ using Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Models;
 
-namespace EzTicket.Services
+namespace EzTickets.Services
 {
     public class MappingProfile : Profile
     {
