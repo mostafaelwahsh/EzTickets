@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250329125141_EZTickets")]
-    partial class EZTickets
+    [Migration("20250330005642_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -227,20 +227,6 @@ namespace Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Models.Category", b =>
-                {
-                    b.Property<string>("CategoryId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CategoryId");
-
-                    b.ToTable("Category");
-                });
-
             modelBuilder.Entity("Models.Event", b =>
                 {
                     b.Property<string>("EventID")
@@ -248,6 +234,9 @@ namespace Data.Migrations
 
                     b.Property<int>("AvailableTickets")
                         .HasColumnType("int");
+
+                    b.Property<byte>("Category")
+                        .HasColumnType("tinyint");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -300,22 +289,7 @@ namespace Data.Migrations
 
                     b.HasIndex("OrganizerID");
 
-                    b.ToTable("Plugins");
-                });
-
-            modelBuilder.Entity("Models.EventCategory", b =>
-                {
-                    b.Property<string>("EventId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CategoryId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("EventId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("CourseContents");
+                    b.ToTable("Event");
                 });
 
             modelBuilder.Entity("Models.Order", b =>
@@ -352,7 +326,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Enrollments");
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("Models.Payment", b =>
@@ -401,7 +375,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("Models.Ticket", b =>
@@ -454,7 +428,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("ShoppingCarts");
+                    b.ToTable("Ticket");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -517,25 +491,6 @@ namespace Data.Migrations
                     b.Navigation("Organizer");
                 });
 
-            modelBuilder.Entity("Models.EventCategory", b =>
-                {
-                    b.HasOne("Models.Category", "Category")
-                        .WithMany("EventCategories")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.Event", "Event")
-                        .WithMany("EventCategories")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Event");
-                });
-
             modelBuilder.Entity("Models.Order", b =>
                 {
                     b.HasOne("Models.ApplicationUser", "User")
@@ -594,15 +549,8 @@ namespace Data.Migrations
                     b.Navigation("Tickets");
                 });
 
-            modelBuilder.Entity("Models.Category", b =>
-                {
-                    b.Navigation("EventCategories");
-                });
-
             modelBuilder.Entity("Models.Event", b =>
                 {
-                    b.Navigation("EventCategories");
-
                     b.Navigation("Tickets");
                 });
 

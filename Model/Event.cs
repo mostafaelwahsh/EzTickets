@@ -10,6 +10,14 @@ namespace Models
         Canceled,
         Completed
     }
+    public enum EventCategoryType : byte
+    {
+        Music,
+        Sports,
+        Conference,
+        Theater,
+        Other
+    }
     public class Event
     {
         [Key]
@@ -27,13 +35,14 @@ namespace Models
         public string? ImageUrl { get; set; }
         public EventStatus Status { get; set; } = EventStatus.Draft;
 
+        public EventCategoryType Category { get; set; }
+
         [ForeignKey("Organizer")]
         public string? OrganizerID { get; set; }
         public ApplicationUser? Organizer { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-        public ICollection<EventCategory> EventCategories { get; set; } = new List<EventCategory>();
 
     }
 }

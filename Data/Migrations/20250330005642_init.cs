@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class EZTickets : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -49,18 +49,6 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Category",
-                columns: table => new
-                {
-                    CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Category", x => x.CategoryId);
                 });
 
             migrationBuilder.CreateTable(
@@ -170,32 +158,7 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Enrollments",
-                columns: table => new
-                {
-                    OrderID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    OrderStatus = table.Column<byte>(type: "tinyint", nullable: false),
-                    PaymentMethod = table.Column<byte>(type: "tinyint", nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Enrollments", x => x.OrderID);
-                    table.ForeignKey(
-                        name: "FK_Enrollments_AspNetUsers_UserID",
-                        column: x => x.UserID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Plugins",
+                name: "Event",
                 columns: table => new
                 {
                     EventID = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -211,22 +174,48 @@ namespace Data.Migrations
                     PricePerTicket = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<byte>(type: "tinyint", nullable: false),
+                    Category = table.Column<byte>(type: "tinyint", nullable: false),
                     OrganizerID = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Plugins", x => x.EventID);
+                    table.PrimaryKey("PK_Event", x => x.EventID);
                     table.ForeignKey(
-                        name: "FK_Plugins_AspNetUsers_OrganizerID",
+                        name: "FK_Event_AspNetUsers_OrganizerID",
                         column: x => x.OrganizerID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payments",
+                name: "Order",
+                columns: table => new
+                {
+                    OrderID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    OrderStatus = table.Column<byte>(type: "tinyint", nullable: false),
+                    PaymentMethod = table.Column<byte>(type: "tinyint", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.OrderID);
+                    table.ForeignKey(
+                        name: "FK_Order_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payment",
                 columns: table => new
                 {
                     PaymentID = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -243,46 +232,22 @@ namespace Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payments", x => x.PaymentID);
+                    table.PrimaryKey("PK_Payment", x => x.PaymentID);
                     table.ForeignKey(
-                        name: "FK_Payments_AspNetUsers_UserId",
+                        name: "FK_Payment_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Payments_Enrollments_OrderID",
+                        name: "FK_Payment_Order_OrderID",
                         column: x => x.OrderID,
-                        principalTable: "Enrollments",
+                        principalTable: "Order",
                         principalColumn: "OrderID");
                 });
 
             migrationBuilder.CreateTable(
-                name: "CourseContents",
-                columns: table => new
-                {
-                    EventId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CourseContents", x => new { x.EventId, x.CategoryId });
-                    table.ForeignKey(
-                        name: "FK_CourseContents_Category_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Category",
-                        principalColumn: "CategoryId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CourseContents_Plugins_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Plugins",
-                        principalColumn: "EventID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShoppingCarts",
+                name: "Ticket",
                 columns: table => new
                 {
                     TicketID = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -301,23 +266,23 @@ namespace Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShoppingCarts", x => x.TicketID);
+                    table.PrimaryKey("PK_Ticket", x => x.TicketID);
                     table.ForeignKey(
-                        name: "FK_ShoppingCarts_AspNetUsers_UserID",
+                        name: "FK_Ticket_AspNetUsers_UserID",
                         column: x => x.UserID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ShoppingCarts_Enrollments_OrderID",
-                        column: x => x.OrderID,
-                        principalTable: "Enrollments",
-                        principalColumn: "OrderID");
-                    table.ForeignKey(
-                        name: "FK_ShoppingCarts_Plugins_EventID",
+                        name: "FK_Ticket_Event_EventID",
                         column: x => x.EventID,
-                        principalTable: "Plugins",
+                        principalTable: "Event",
                         principalColumn: "EventID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ticket_Order_OrderID",
+                        column: x => x.OrderID,
+                        principalTable: "Order",
+                        principalColumn: "OrderID");
                 });
 
             migrationBuilder.CreateIndex(
@@ -360,43 +325,38 @@ namespace Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseContents_CategoryId",
-                table: "CourseContents",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Enrollments_UserID",
-                table: "Enrollments",
-                column: "UserID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Payments_OrderID",
-                table: "Payments",
-                column: "OrderID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Payments_UserId",
-                table: "Payments",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Plugins_OrganizerID",
-                table: "Plugins",
+                name: "IX_Event_OrganizerID",
+                table: "Event",
                 column: "OrganizerID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShoppingCarts_EventID",
-                table: "ShoppingCarts",
-                column: "EventID");
+                name: "IX_Order_UserID",
+                table: "Order",
+                column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShoppingCarts_OrderID",
-                table: "ShoppingCarts",
+                name: "IX_Payment_OrderID",
+                table: "Payment",
                 column: "OrderID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShoppingCarts_UserID",
-                table: "ShoppingCarts",
+                name: "IX_Payment_UserId",
+                table: "Payment",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ticket_EventID",
+                table: "Ticket",
+                column: "EventID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ticket_OrderID",
+                table: "Ticket",
+                column: "OrderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ticket_UserID",
+                table: "Ticket",
                 column: "UserID");
         }
 
@@ -419,25 +379,19 @@ namespace Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CourseContents");
+                name: "Payment");
 
             migrationBuilder.DropTable(
-                name: "Payments");
-
-            migrationBuilder.DropTable(
-                name: "ShoppingCarts");
+                name: "Ticket");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Category");
+                name: "Event");
 
             migrationBuilder.DropTable(
-                name: "Enrollments");
-
-            migrationBuilder.DropTable(
-                name: "Plugins");
+                name: "Order");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
