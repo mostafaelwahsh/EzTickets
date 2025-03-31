@@ -193,10 +193,10 @@ namespace EzTickets.Controllers
             ticket.PurchaseDate = DateTime.UtcNow;
             ticket.SeatNumber = numOftickets;
             ticket.TicketStatus = TicketStatus.SoldOut;
-            var eventinfo /*=/* _eventRepository.GetById(/*eventId*//*)*/;//----Add this to eventRepo*/*/
-            eventinfo.AvailableTickets -= numOftickets;
-            _eventRepository.Update(eventinfo);
-            _eventRepository.Save();
+            //var eventinfo /*=/* _eventRepository.GetById(/*eventId*//*)*/;//----Add this to eventRepo*/*/
+            //eventinfo.AvailableTickets -= numOftickets;
+            //_eventRepository.Update(eventinfo);
+            //_eventRepository.Save();
 
             _ticketRepository.Update(ticket);
             _ticketRepository.Save();
