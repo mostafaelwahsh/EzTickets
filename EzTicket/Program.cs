@@ -12,7 +12,7 @@ namespace EzTicket
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +25,7 @@ namespace EzTicket
             options.UseSqlServer(builder.Configuration.GetConnectionString("CS"),
             sqlOptions => sqlOptions.MigrationsAssembly("EzTickets")
             ));
+
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<DataContext>();
@@ -104,6 +105,12 @@ namespace EzTicket
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                await RoleSeeder.SeedRolesAsync(roleManager); // Creates "User" and "Admin" in DB
             }
 
             app.UseStaticFiles();
