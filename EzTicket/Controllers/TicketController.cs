@@ -16,21 +16,34 @@ namespace EzTickets.Controllers
     {
         private readonly ITicketRepository _ticketRepository;
         private readonly IMapper _mapper;
+        private readonly IEventRepository _eventRepository;
 
-        public TicketController(ITicketRepository ticketRepository, IMapper mapper)
+        public TicketController(ITicketRepository ticketRepository, IMapper mapper, IEventRepository eventRepository)
         {
             _ticketRepository = ticketRepository;
             _mapper = mapper;
+            _eventRepository = eventRepository;
         }
 
         // GET: api/Ticket
         [HttpGet]
-        public ActionResult<IEnumerable<TicketResponseDTO>> GetAllTickets()
+        public ActionResult<IEnumerable<TicketResponseDTO>> GetAllTickets([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
-            var tickets = _ticketRepository.GetAll();
-            return Ok(_mapper.Map<List<TicketResponseDTO>>(tickets));
+            try
+            {
+                var tickets = _ticketRepository.GetAll()
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+                var ticketDTOs = _mapper.Map<List<TicketResponseDTO>>(tickets);
+                return Ok(ticketDTOs);
+            }
+            catch (Exception ex)
+            {
+                
+                return StatusCode(500, "An error occurred while retrieving tickets");
+            }
         }
-
         // GET: api/Ticket/5
         [HttpGet("{id}")]
         public ActionResult<TicketResponseDTO> GetTicket(string id)
@@ -47,9 +60,18 @@ namespace EzTickets.Controllers
 
         // GET: api/Ticket/event/5
         [HttpGet("event/{eventId}")]
-        public ActionResult<IEnumerable<TicketResponseDTO>> GetTicketsByEvent(string eventId)
+        public ActionResult<IEnumerable<TicketResponseDTO>> GetTicketsByEvent(string eventId, [FromQuery] TicketStatus ticketStatus)
         {
+            //if (!_eventRepository.EventExists(eventId)) //------------------------------------------Add this Method to EventRepository
+            //{
+            //    return NotFound("Event not found");
+            //}
             var tickets = _ticketRepository.GetTicketsByEventId(eventId);
+            if (ticketStatus==TicketStatus.Available)
+            {
+                tickets = tickets.Where(t => t.TicketStatus == TicketStatus.Available).ToList();
+            }
+            //var eventInfo = _eventRepository.GetByStringId(eventId);
             return Ok(_mapper.Map<List<TicketResponseDTO>>(tickets));
         }
 
@@ -92,7 +114,7 @@ namespace EzTickets.Controllers
                 _mapper.Map<TicketResponseDTO>(ticket));
         }
 
-        // POST: api/Ticket/bulk
+        // POST: api/Ticket/bulk 
         [HttpPost("bulk")]
         public ActionResult<IEnumerable<TicketResponseDTO>> CreateBulkTickets(
             [FromQuery] string eventId,
@@ -148,7 +170,73 @@ namespace EzTickets.Controllers
             return NoContent();
         }
 
-        // Other actions remain the same...
-        // (GET status/type/count/sales, PUT status/assign, GET qrcode, DELETE)
+
+        //[Authorize]
+        [HttpPost("purchase/event/{eventId}")]
+        public ActionResult<TicketResponseDTO> PurchaseNextAvailableTicket(string userId, string eventId,int numOftickets)
+        {
+            var ticket = _ticketRepository.GetTicketsByEventId(eventId)
+                            .FirstOrDefault(t => t.TicketStatus == TicketStatus.Available);
+
+            if (ticket == null)
+            {
+                return NotFound("No available tickets for this event.");
+            }
+
+            //var userId = User.Identity?.Name;
+            //if (string.IsNullOrEmpty(userId))
+            //{
+            //    return Unauthorized("User must be logged in to purchase a ticket.");
+            //}
+
+            ticket.UserID = userId;
+            ticket.PurchaseDate = DateTime.UtcNow;
+            ticket.SeatNumber = numOftickets;
+            ticket.TicketStatus = TicketStatus.SoldOut;
+            var eventinfo /*=/* _eventRepository.GetById(/*eventId*//*)*/;//----Add this to eventRepo*/*/
+            eventinfo.AvailableTickets -= numOftickets;
+            _eventRepository.Update(eventinfo);
+            _eventRepository.Save();
+
+            _ticketRepository.Update(ticket);
+            _ticketRepository.Save();
+
+            return Ok(_mapper.Map<TicketResponseDTO>(ticket));
+        }
+
+
+
+
+        [HttpGet("type/{type}")]
+        public ActionResult<IEnumerable<TicketResponseDTO>> GetTicketsByType(TicketType type)
+        {
+            var tickets = _ticketRepository.GetTicketsByType(type);
+            var tiketsDTO = _mapper.Map<List<TicketResponseDTO>>(tickets);
+            return Ok(tiketsDTO);
+
+            //return Ok(ticketDTOs);
+        }
+        [HttpDelete] 
+        public ActionResult DeleteTicket(string id)
+        {
+            var ticket = _ticketRepository.GetById(id);
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+            //if (!string.IsNullOrEmpty(ticket.UserID) &&
+            //    ticket.UserID != User.Identity?.Name &&
+            //    !User.IsInRole("Admin"))
+            //{
+            //    return Forbid();
+            //}
+            _ticketRepository.DeleteById(id);
+            _ticketRepository.Save();
+            return NoContent();
+        }
+
+
+
+       
     }
 }

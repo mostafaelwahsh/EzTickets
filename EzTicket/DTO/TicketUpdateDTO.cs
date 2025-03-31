@@ -10,5 +10,7 @@ namespace EzTickets.DTO
         public DateTime? PurchaseDate { get; set; }
         public bool IsDeleted { get; set; }
         public int? SeatNumber { get; set; }
+        //public string? FullName { get; set; }
+
     }
 }

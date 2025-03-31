@@ -65,7 +65,7 @@ namespace EzTickets.Repository
         }
 
         // Delete by string ID
-        public void Delete(string id)
+        public void DeleteById(string id)
         {
             var ticket = GetById(id);
             if (ticket != null)

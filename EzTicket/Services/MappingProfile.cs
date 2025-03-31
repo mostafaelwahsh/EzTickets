@@ -43,7 +43,7 @@ namespace EzTickets.Services
                 //.ForMember(dest => dest.SeatNumber, opt => opt.Ignore())
                 .ForMember(dest => dest.QRCode, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()); 
-            #endregion
+            #endregion            
         }
     }
 }

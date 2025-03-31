@@ -7,6 +7,7 @@ namespace EzTickets.Repository
     {
         // Get by string ID (matching your model)
         Ticket GetById(string id);
+        void DeleteById(string id);
 
         // Additional query methods
         List<Ticket> GetTicketsByEventId(string eventId);
@@ -19,7 +20,7 @@ namespace EzTickets.Repository
         bool AssignTicketToUser(string ticketId, string userId);
 
         // Soft delete functionality
-        bool SoftDelete(string ticketId);
+       
 
         // Statistics methods
         int GetAvailableTicketsCountByEvent(string eventId);
