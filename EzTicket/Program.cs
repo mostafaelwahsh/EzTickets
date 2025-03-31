@@ -1,5 +1,8 @@
 
+using AutoMapper;
 using Data;
+using EzTickets.Repository;
+using EzTickets.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace EzTicket
@@ -16,6 +19,9 @@ namespace EzTicket
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             // Register DataContext with Connection String
             builder.Services.AddDbContext<DataContext>(options =>

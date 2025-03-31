@@ -4,6 +4,7 @@ namespace EzTickets.DTO
 {
     public class TicketCreateDTO
     {
+        public string?TicketID { get; set; }
         public string EventID { get; set; }
         public string? UserID { get; set; }
         public TicketType TicketType { get; set; } = TicketType.Regular;
