@@ -1,6 +1,6 @@
 ﻿public class OrderDto
 {
-    public string OrderID { get; set; }
+    public int OrderID { get; set; }
     public string UserID { get; set; }
     public decimal TotalAmount { get; set; }
     public decimal? DiscountAmount { get; set; }

@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250402224801_fixorder")]
+    partial class fixorder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -296,11 +299,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Models.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("OrderID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -327,7 +330,7 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.HasKey("OrderID");
 
                     b.HasIndex("UserID");
 
@@ -401,7 +404,7 @@ namespace Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int?>("OrderID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -429,7 +432,7 @@ namespace Data.Migrations
 
                     b.HasIndex("EventID");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderID");
 
                     b.HasIndex("UserID");
 
@@ -534,7 +537,7 @@ namespace Data.Migrations
 
                     b.HasOne("Models.Order", null)
                         .WithMany("Tickets")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderID");
 
                     b.HasOne("Models.ApplicationUser", "User")
                         .WithMany("Tickets")

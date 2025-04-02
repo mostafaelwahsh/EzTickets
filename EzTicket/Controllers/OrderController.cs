@@ -27,9 +27,9 @@ namespace EzTickets.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(string id)
+        public IActionResult GetById(int id)
         {
-            var order = _repository.GetAll().FirstOrDefault(o => o.OrderID == id);
+            var order = _repository.GetById(id);
             if (order == null) return NotFound();
             return Ok(_mapper.Map<OrderDto>(order));
         }
@@ -38,18 +38,17 @@ namespace EzTickets.Controllers
         public IActionResult Create([FromBody] CreateOrderDto dto)
         {
             var order = _mapper.Map<Order>(dto);
-            order.OrderID = Guid.NewGuid().ToString(); // Ensure OrderID is set
 
             _repository.Insert(order);
             _repository.Save();
 
-            return CreatedAtAction(nameof(GetById), new { id = order.OrderID }, _mapper.Map<OrderDto>(order));
+            return Ok();
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(string id, [FromBody] UpdateOrderDto dto)
+        public IActionResult Update(int id, [FromBody] UpdateOrderDto dto)
         {
-            var existing = _repository.GetAll().FirstOrDefault(o => o.OrderID == id);
+            var existing = _repository.GetAll().FirstOrDefault(o => o.Id == id);
             if (existing == null) return NotFound();
 
             _mapper.Map(dto, existing);
@@ -60,12 +59,12 @@ namespace EzTickets.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public IActionResult Delete(int id)
         {
-            var order = _repository.GetAll().FirstOrDefault(o => o.OrderID == id);
+            var order = _repository.GetAll().FirstOrDefault(o => o.Id == id);
             if (order == null) return NotFound();
 
-            _repository.Delete(int.Parse(order.OrderID));
+            _repository.Delete(order.Id);
             _repository.Save();
 
             return NoContent();
