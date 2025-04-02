@@ -11,7 +11,8 @@ namespace EzTickets.Services
         public MappingProfile()
         {
             #region Ticket
-            CreateMap<Ticket, TicketResponseDTO>()
+            
+            CreateMap<Ticket, TicketResponseDTO>() //source,destination
                      .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.Event.EventName))
                      .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.FullName));
 

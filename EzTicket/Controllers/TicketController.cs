@@ -214,6 +214,7 @@ namespace EzTickets.Controllers
             };
 
             return CreatedAtAction(nameof(GetTicketsByEvent), new { eventId = eventId }, response);
+            
         }
 
         // PUT: api/Ticket/5

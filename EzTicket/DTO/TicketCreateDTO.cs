@@ -11,5 +11,6 @@ namespace EzTickets.DTO
         public decimal Price { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public int? SeatNumber { get; set; }
+
     }
 }
