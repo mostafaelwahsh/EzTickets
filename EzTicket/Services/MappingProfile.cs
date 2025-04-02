@@ -9,7 +9,14 @@ namespace EzTickets.Services
     {
         public MappingProfile()
         {
+            CreateMap<Order, OrderDto>()
+                .ForMember(dest => dest.TicketIds, opt => opt.MapFrom(src => src.Tickets.Select(t => t.TicketID)))
+                .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
+                .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.PaymentMethod.ToString()));
 
+            CreateMap<CreateOrderDto, Order>();
+            CreateMap<UpdateOrderDto, Order>()
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }
