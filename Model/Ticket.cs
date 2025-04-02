@@ -5,14 +5,14 @@ namespace Models
 {
     public enum TicketStatus : byte
     {
-        Available,
-        SoldOut,
-        Expired
+        Available, //0
+        SoldOut, //1
+        Expired //2
     }
     public enum TicketType : byte
     {
-        Regular,
-        VIP
+        Regular, //0
+        VIP //1
     }
     public class Ticket
     {
