@@ -22,6 +22,10 @@ namespace EzTicket
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IApplicationBuilder, ApplicationBuilder>();
+            builder.Services.AddScoped<IEventRepository , EventRepository>();
+            builder.Services.AddScoped<ITicketRepository , TicketRepository>();
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             // Register DataContext with Connection String
             builder.Services.AddDbContext<DataContext>(options =>
