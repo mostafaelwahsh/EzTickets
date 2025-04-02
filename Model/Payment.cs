@@ -33,7 +33,7 @@ namespace Models
         public ApplicationUser User { get; set; }
 
         [ForeignKey("Order")]
-        public string? OrderID { get; set; } // Nullable if payment is pending
+        public int? OrderID { get; set; } // Nullable if payment is pending
         public Order? Order { get; set; }
     }
 }

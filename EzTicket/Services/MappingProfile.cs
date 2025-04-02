@@ -45,6 +45,15 @@ namespace EzTickets.Services
                 .ForMember(dest => dest.QRCode, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()); 
             #endregion            
+            #region order
+            CreateMap<CreateOrderDto, Order>()
+           .ForMember(dest => dest.Tickets, opt => opt.Ignore())
+           .ForMember(dest => dest.Id, opt => opt.Ignore())
+           .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+           .ForMember(dest => dest.User, opt => opt.Ignore())
+           .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
+            #endregion
+
         }
     }
 }

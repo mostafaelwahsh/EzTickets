@@ -1,37 +1,54 @@
-﻿using Models;
+﻿using Data;
+using Microsoft.EntityFrameworkCore;
+using Models;
 
 namespace EzTickets.Repository
 {
     public class OrderRepository : IOrderRepository
     {
-        public void Delete(int Id)
+        private readonly DataContext _context;
+
+        public OrderRepository(DataContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
         public List<Order> GetAll()
         {
-            throw new NotImplementedException();
+            return _context.Order
+                .Include(o => o.Tickets)
+                .ToList();
         }
 
-        public Order GetById(int Id)
+        public Order GetById(int id)
         {
-            throw new NotImplementedException();
+            return _context.Order
+                .Include(o => o.Tickets)
+                .FirstOrDefault(o => o.Id == id);
         }
 
-        public void Insert(Order obj)
+        public void Insert(Order order)
         {
-            throw new NotImplementedException();
+            _context.Order.Add(order);
+        }
+
+        public void Update(Order order)
+        {
+            _context.Order.Update(order);
+        }
+
+        public void Delete(int id)
+        {
+            var order = GetById(id);
+            if (order != null)
+            {
+                _context.Order.Remove(order);
+            }
         }
 
         public int Save()
         {
-            throw new NotImplementedException();
-        }
-
-        public void Update(Order obj)
-        {
-            throw new NotImplementedException();
+            return _context.SaveChanges();
         }
     }
 }
