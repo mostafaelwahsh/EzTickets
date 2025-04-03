@@ -59,13 +59,10 @@ namespace EzTickets.Controllers
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(ApiResponse<OrderDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<OrderDto>), StatusCodes.Status404NotFound)]
         public IActionResult Update(int id, [FromBody] UpdateOrderDto dto)
         {
-            var existing = _repository.GetById(id);
-            if (existing == null)
-                return NotFound(ApiResponse<OrderDto>.Fail("Order not found"));
+            var existing = _repository.GetAll().FirstOrDefault(o => o.Id == id);
+            if (existing == null) return NotFound();
 
             _mapper.Map(dto, existing);
             _repository.Update(existing);
@@ -79,11 +76,10 @@ namespace EzTickets.Controllers
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status404NotFound)]
         public IActionResult Delete(int id)
         {
-            var existing = _repository.GetById(id);
-            if (existing == null)
-                return NotFound(ApiResponse<string>.Fail("Order not found"));
+            var order = _repository.GetAll().FirstOrDefault(o => o.Id == id);
+            if (order == null) return NotFound();
 
-            _repository.Delete(id);
+            _repository.Delete(order.Id);
             _repository.Save();
 
             return Ok(ApiResponse<string>.Ok(existing.Id.ToString(), "Order deleted"));

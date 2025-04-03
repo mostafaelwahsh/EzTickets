@@ -1,7 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using EzTickets.DTO;
+using EzTickets.DTO.Public;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -15,11 +16,13 @@ namespace EzTickets.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AccountController(UserManager<ApplicationUser> userManager, IConfiguration config)
+        public AccountController(UserManager<ApplicationUser> userManager, IConfiguration config, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _config = config;
+            _roleManager = roleManager;
         }
 
         [HttpPost("register")]
@@ -32,21 +35,34 @@ namespace EzTickets.Controllers
                 ApplicationUser user = new ApplicationUser
                                      {
                                          Email = userFromRequest.Email,  
+                                         UserName = userFromRequest.Email,
                                          FullName = userFromRequest.FullName,
                                          PhoneNumber = userFromRequest.PhoneNumber
                                      };
                 IdentityResult result = await _userManager.CreateAsync(user, userFromRequest.Password);
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "User");
-                    response.IsPass = true;
-                    response.Data = "User Registered Successfully";
+                    if (user.UserName == "admin@admin.com")
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, "User");
+                    }
+                    
+                    return (new GeneralResponse()
+                    {
+                        IsPass = true,
+                        Data = "User Registered Successfully"
+                    });
                 }
                 foreach (var item in result.Errors)
                 {
                     ModelState.AddModelError("", item.Description);
                 }
             }
+
             response.IsPass = false;
             response.Data = ModelState;
             return response;
@@ -105,5 +121,18 @@ namespace EzTickets.Controllers
             response.Data=ModelState;
             return response;
         }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<ActionResult<GeneralResponse>> Logout()
+        {
+            return Ok(new GeneralResponse
+            {
+                IsPass = true,
+                Data = "Logged out successfully. Please discard your token."
+            });
+        }
+
+        //To Do: Forget Password - Reset Password
     }
 }

@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Models;
 using EzTickets.Repository;
-using EzTickets.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using EzTickets.DTO.Public;
 
 namespace EzTickets.Controllers
 {
@@ -84,7 +84,7 @@ namespace EzTickets.Controllers
 
         // GET: api/Ticket/event/5
         [HttpGet("event/{eventId}")]
-        public ActionResult<GeneralResponse> GetTicketsByEvent(string eventId, [FromQuery] TicketStatus ticketStatus)
+        public ActionResult<GeneralResponse> GetTicketsByEvent(int eventId, [FromQuery] TicketStatus ticketStatus)
         {
             //if (!_eventRepository.EventExists(eventId))
             //{
@@ -178,7 +178,7 @@ namespace EzTickets.Controllers
         // POST: api/Ticket/bulk 
         [HttpPost("bulk")]
         public ActionResult<GeneralResponse> CreateBulkTickets(
-            [FromQuery] string eventId,
+            [FromQuery] int eventId,
             [FromQuery] int count,
             [FromQuery] decimal price,
             [FromQuery] TicketType ticketType = TicketType.Regular)
@@ -214,6 +214,7 @@ namespace EzTickets.Controllers
             };
 
             return CreatedAtAction(nameof(GetTicketsByEvent), new { eventId = eventId }, response);
+            
         }
 
         // PUT: api/Ticket/5
@@ -259,7 +260,7 @@ namespace EzTickets.Controllers
 
         //[Authorize]
         [HttpPost("purchase/event/{eventId}")]
-        public ActionResult<GeneralResponse> PurchaseNextAvailableTicket(string userId, string eventId, int numOftickets)
+        public ActionResult<GeneralResponse> PurchaseNextAvailableTicket(string userId, int eventId, int numOftickets)
         {
             var ticket = _ticketRepository.GetTicketsByEventId(eventId)
                             .FirstOrDefault(t => t.TicketStatus == TicketStatus.Available);

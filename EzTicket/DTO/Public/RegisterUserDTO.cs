@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EzTickets.DTO
+namespace EzTickets.DTO.Public
 {
     public class RegisterUserDTO
     {
@@ -12,7 +12,7 @@ namespace EzTickets.DTO
         public string Password { get; set; }
 
         [Required]
-        public String FullName { get; set; }
+        public string FullName { get; set; }
 
         [Required,Phone]
         public string PhoneNumber { get; set; }

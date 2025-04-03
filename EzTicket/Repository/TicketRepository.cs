@@ -26,12 +26,6 @@ namespace EzTickets.Repository
                 .ToList();
         }
 
-        // Original method kept for interface compatibility
-        public Ticket GetById(int Id)
-        {
-            throw new NotImplementedException("Use string ID version instead");
-        }
-
         
         public Ticket GetById(string id)
         {
@@ -58,12 +52,6 @@ namespace EzTickets.Repository
             _context.Entry(ticket).State = EntityState.Modified;
         }
 
-        // Delete is now implemented with the ID as string
-        public void Delete(int Id)
-        {
-            throw new NotImplementedException("Use string ID version instead");
-        }
-
         // Delete by string ID
         public void DeleteById(string id)
         {
@@ -74,24 +62,13 @@ namespace EzTickets.Repository
             }
         }
 
-        // Soft delete functionality
-        public bool SoftDelete(string ticketId)
+        public void Save()
         {
-            var ticket = GetById(ticketId);
-            if (ticket == null) return false;
-
-            ticket.IsDeleted = true;
-            Update(ticket);
-            return Save() > 0;
-        }
-
-        public int Save()
-        {
-            return _context.SaveChanges();
+            _context.SaveChanges();
         }
 
         // Additional query methods
-        public List<Ticket> GetTicketsByEventId(string eventId)
+        public List<Ticket> GetTicketsByEventId(int eventId)
         {
             return _context.Ticket
                 .Where(t => t.EventID == eventId && !t.IsDeleted)
@@ -135,7 +112,8 @@ namespace EzTickets.Repository
 
             ticket.TicketStatus = status;
             Update(ticket);
-            return Save() > 0;
+            Save();
+            return true;
         }
 
         public bool AssignTicketToUser(string ticketId, string userId)
@@ -147,11 +125,12 @@ namespace EzTickets.Repository
             ticket.TicketStatus = TicketStatus.Available; // Changed to Available since SoldOut isn't for individual tickets
             ticket.PurchaseDate = DateTime.UtcNow;
             Update(ticket);
-            return Save() > 0;
+            Save();
+            return true;
         }
 
         // Statistics methods
-        public int GetAvailableTicketsCountByEvent(string eventId)
+        public int GetAvailableTicketsCountByEvent(int eventId)
         {
             return _context.Ticket
                 .Count(t => t.EventID == eventId &&
@@ -159,7 +138,7 @@ namespace EzTickets.Repository
                            !t.IsDeleted);
         }
 
-        public decimal GetTotalSalesByEvent(string eventId)
+        public decimal GetTotalSalesByEvent(int eventId)
         {
             return _context.Ticket
                 .Where(t => t.EventID == eventId &&

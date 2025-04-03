@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EzTickets.Migrations
+namespace Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250329125032_EZTickets")]
-    partial class EZTickets
+    [Migration("20250403194827_initDb")]
+    partial class initDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -166,6 +166,12 @@ namespace EzTickets.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("BloodType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -178,7 +184,6 @@ namespace EzTickets.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -227,27 +232,19 @@ namespace EzTickets.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Models.Category", b =>
-                {
-                    b.Property<string>("CategoryId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CategoryId");
-
-                    b.ToTable("Category");
-                });
-
             modelBuilder.Entity("Models.Event", b =>
                 {
-                    b.Property<string>("EventID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("EventID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventID"));
 
                     b.Property<int>("AvailableTickets")
                         .HasColumnType("int");
+
+                    b.Property<byte>("Category")
+                        .HasColumnType("tinyint");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -277,9 +274,6 @@ namespace EzTickets.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OrganizerID")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<decimal>("PricePerTicket")
                         .HasColumnType("decimal(18,2)");
 
@@ -298,30 +292,16 @@ namespace EzTickets.Migrations
 
                     b.HasKey("EventID");
 
-                    b.HasIndex("OrganizerID");
-
-                    b.ToTable("Plugins");
-                });
-
-            modelBuilder.Entity("Models.EventCategory", b =>
-                {
-                    b.Property<string>("EventId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CategoryId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("EventId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("CourseContents");
+                    b.ToTable("Event");
                 });
 
             modelBuilder.Entity("Models.Order", b =>
                 {
-                    b.Property<string>("OrderID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -348,11 +328,11 @@ namespace EzTickets.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("OrderID");
+                    b.HasKey("OrderId");
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Enrollments");
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("Models.Payment", b =>
@@ -379,8 +359,8 @@ namespace EzTickets.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OrderID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("OrderID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
@@ -401,7 +381,7 @@ namespace EzTickets.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("Models.Ticket", b =>
@@ -412,9 +392,8 @@ namespace EzTickets.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EventID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime2");
@@ -422,8 +401,8 @@ namespace EzTickets.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OrderID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("OrderID")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -454,7 +433,7 @@ namespace EzTickets.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("ShoppingCarts");
+                    b.ToTable("Ticket");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -508,34 +487,6 @@ namespace EzTickets.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Models.Event", b =>
-                {
-                    b.HasOne("Models.ApplicationUser", "Organizer")
-                        .WithMany()
-                        .HasForeignKey("OrganizerID");
-
-                    b.Navigation("Organizer");
-                });
-
-            modelBuilder.Entity("Models.EventCategory", b =>
-                {
-                    b.HasOne("Models.Category", "Category")
-                        .WithMany("EventCategories")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.Event", "Event")
-                        .WithMany("EventCategories")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Event");
-                });
-
             modelBuilder.Entity("Models.Order", b =>
                 {
                     b.HasOne("Models.ApplicationUser", "User")
@@ -572,7 +523,7 @@ namespace EzTickets.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Order", null)
+                    b.HasOne("Models.Order", "Order")
                         .WithMany("Tickets")
                         .HasForeignKey("OrderID");
 
@@ -581,6 +532,8 @@ namespace EzTickets.Migrations
                         .HasForeignKey("UserID");
 
                     b.Navigation("Event");
+
+                    b.Navigation("Order");
 
                     b.Navigation("User");
                 });
@@ -594,15 +547,8 @@ namespace EzTickets.Migrations
                     b.Navigation("Tickets");
                 });
 
-            modelBuilder.Entity("Models.Category", b =>
-                {
-                    b.Navigation("EventCategories");
-                });
-
             modelBuilder.Entity("Models.Event", b =>
                 {
-                    b.Navigation("EventCategories");
-
                     b.Navigation("Tickets");
                 });
 

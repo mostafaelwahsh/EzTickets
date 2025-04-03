@@ -24,7 +24,7 @@ namespace EzTickets.Repository
         {
             return _context.Order
                 .Include(o => o.Tickets)
-                .FirstOrDefault(o => o.Id == id);
+                .FirstOrDefault(o => o.OrderId == id);
         }
 
         public void Insert(Order order)
@@ -46,9 +46,9 @@ namespace EzTickets.Repository
             }
         }
 
-        public int Save()
+        public void Save()
         {
-            return _context.SaveChanges();
+            _context.SaveChanges();
         }
     }
 }
