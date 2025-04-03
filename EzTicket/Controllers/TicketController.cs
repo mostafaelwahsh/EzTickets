@@ -178,7 +178,7 @@ namespace EzTickets.Controllers
         // POST: api/Ticket/bulk 
         [HttpPost("bulk")]
         public ActionResult<GeneralResponse> CreateBulkTickets(
-            [FromQuery] string eventId,
+            [FromQuery] int eventId,
             [FromQuery] int count,
             [FromQuery] decimal price,
             [FromQuery] TicketType ticketType = TicketType.Regular)
