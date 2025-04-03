@@ -1,10 +1,11 @@
-﻿using Models;
+﻿using EzTickets.DTO.Pagination;
+using Models;
 
 namespace EzTickets.Repository
 {
     public interface IEventRepository : IRepository<Event>
     {
-        List<Event> GetAllPublic();
+        PagedResponse<Event> GetAllPublic(PaginationParams pagination);
         Event GetByIdPublic(int Id);
         List<Event> GetEventsByCity(string city);
         List<Event> GetEventsByCountry(string country);
@@ -18,5 +19,15 @@ namespace EzTickets.Repository
         void SoftDeleteEvent(int eventId);
         void RestoreEvent(int eventId);
         int GetTotalEventsCount();
+        PagedResponse<Event> GetFilteredPublicEvents(
+        string? searchQuery = null,
+        EventCategoryType? category = null,
+        string? city = null,
+        string? venue = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        PaginationParams? pagination = null);
     }
 }

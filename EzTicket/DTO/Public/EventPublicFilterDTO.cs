@@ -1,9 +1,10 @@
-﻿using Models;
+﻿using EzTickets.DTO.Pagination;
+using Models;
 using System;
 
 namespace EzTickets.DTO.Public
 {
-    public class EventPublicFilterDTO
+    public class EventPublicFilterDTO : PaginationParams
     {
         public string? SearchQuery { get; set; }
         public string? City { get; set; }

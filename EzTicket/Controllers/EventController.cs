@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EzTickets.DTO.Admin;
+using EzTickets.DTO.Pagination;
 using EzTickets.DTO.Public;
 using EzTickets.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -23,17 +24,23 @@ namespace EzTickets.Controllers
 
         #region Public Endpoints
 
+        // GET: api/event (for public view)
         [HttpGet]
-        public ActionResult<GeneralResponse> GetAllEvents()
+        public ActionResult<GeneralResponse> GetAllEventsPublic([FromQuery] PaginationParams pagination)
         {
             try
             {
-                var events = _eventRepository.GetAll()
-                    .Where(e => e.Status == EventStatus.Published);
+                var pagedEvents = _eventRepository.GetAllPublic(pagination);
+                var result = new PagedResponse<EventPublicListDTO>(
+                    _mapper.Map<List<EventPublicListDTO>>(pagedEvents.Data),
+                    pagedEvents.PageNumber,
+                    pagedEvents.PageSize,
+                    pagedEvents.TotalRecords);
+
                 return new GeneralResponse
                 {
                     IsPass = true,
-                    Data = _mapper.Map<List<EventPublicListDTO>>(events)
+                    Data = result
                 };
             }
             catch (Exception ex)
@@ -72,53 +79,26 @@ namespace EzTickets.Controllers
         {
             try
             {
-                IEnumerable<Event> events = _eventRepository.GetAllPublic();
-
-                if (!string.IsNullOrEmpty(filter.SearchQuery))
-                {
-                    events = _eventRepository.GetEventsByName(filter.SearchQuery);
-                }
-
-                if (filter.Category.HasValue)
-                {
-                    events = events.Intersect(_eventRepository.GetEventsByCategory(filter.Category.Value));
-                }
-
-                if (!string.IsNullOrEmpty(filter.City))
-                {
-                    events = events.Intersect(_eventRepository.GetEventsByCity(filter.City));
-                }
-
-                if (!string.IsNullOrEmpty(filter.VenueName))
-                {
-                    events = events.Intersect(_eventRepository.GetEventsByVenue(filter.VenueName));
-                }
-
-                if (filter.MinPrice.HasValue || filter.MaxPrice.HasValue)
-                {
-                    events = events.Intersect(_eventRepository.GetEventsByPriceRange(
-                        filter.MinPrice ?? 0,
-                        filter.MaxPrice ?? decimal.MaxValue));
-                }
-
-                if (filter.StartDate.HasValue && filter.EndDate.HasValue)
-                {
-                    events = events.Intersect(_eventRepository.GetEventsByDateRange(
-                        filter.StartDate.Value,
-                        filter.EndDate.Value));
-                }
-                else if (filter.StartDate.HasValue)
-                {
-                    events = events.Intersect(_eventRepository.GetEventsByDate(filter.StartDate.Value));
-                }
-
-                var result = events.ToList();
-                var mappedResults = _mapper.Map<List<EventPublicListDTO>>(result);
+                var result = _eventRepository.GetFilteredPublicEvents(
+                    searchQuery: filter.SearchQuery,
+                    category: filter.Category,
+                    city: filter.City,
+                    venue: filter.VenueName,
+                    minPrice: filter.MinPrice,
+                    maxPrice: filter.MaxPrice,
+                    startDate: filter.StartDate,
+                    endDate: filter.EndDate,
+                    pagination: filter
+                );
 
                 return new GeneralResponse
                 {
                     IsPass = true,
-                    Data = mappedResults
+                    Data = new PagedResponse<EventPublicListDTO>(
+                        _mapper.Map<List<EventPublicListDTO>>(result.Data),
+                        result.PageNumber,
+                        result.PageSize,
+                        result.TotalRecords)
                 };
             }
             catch (Exception ex)
@@ -133,6 +113,35 @@ namespace EzTickets.Controllers
         #endregion
 
         #region Admin Endpoints
+
+        // GET: api/event/admin (for admin view)
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin")]
+        public ActionResult<GeneralResponse> GetAllEventsAdmin([FromQuery] PaginationParams pagination)
+        {
+            try
+            {
+                var pagedEvents = _eventRepository.GetAll(pagination);
+                var result = new PagedResponse<EventAdminResponseDTO>(
+                    _mapper.Map<List<EventAdminResponseDTO>>(pagedEvents.Data),
+                    pagedEvents.PageNumber,
+                    pagedEvents.PageSize,
+                    pagedEvents.TotalRecords);
+
+                return new GeneralResponse
+                {
+                    IsPass = true,
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse
+                {
+                    IsPass = false,
+                };
+            }
+        }
 
         // POST: api/event
         //[Authorize(Roles = "Admin")]
@@ -219,8 +228,8 @@ namespace EzTickets.Controllers
                     IsPass = false,
                 };
             }
-        } 
-        
+        }
+
         //// DELETE: api/event/5
         ////[Authorize(Roles = "Admin")]
         //[HttpDelete("{id}")]
