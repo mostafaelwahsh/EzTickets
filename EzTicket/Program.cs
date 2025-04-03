@@ -27,6 +27,7 @@ namespace EzTicket
             builder.Services.AddScoped<ITicketRepository , TicketRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IInfoRepository, InfoRepository>();
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             // Register DataContext with Connection String

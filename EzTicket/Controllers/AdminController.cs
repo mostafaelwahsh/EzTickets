@@ -18,14 +18,38 @@ namespace EzTickets.Controllers
         private readonly IMapper _mapper;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserRepository _userRepository;
+        private readonly IInfoRepository _infoRepository;
 
         public AdminController(UserManager<ApplicationUser> userManager, IMapper mapper,
-                               RoleManager<IdentityRole> roleManager, IUserRepository userRepository)
+                               RoleManager<IdentityRole> roleManager, IUserRepository userRepository,
+                               IInfoRepository infoRepository)
         {
             _userManager = userManager;
             _mapper = mapper;
             _roleManager = roleManager;
             _userRepository = userRepository;
+        }
+
+        [HttpGet("contact")]
+        public ActionResult<GeneralResponse> GetContactRequests()
+        {
+            var requests = _infoRepository.GetAllRequests();
+            return (new GeneralResponse
+            {
+                IsPass = true,
+                Data = requests
+            });
+        }
+
+        // To Do
+        public async Task<ActionResult<GeneralResponse>> GetStatistics()
+        {
+            // var statistics = _eventRepository.Get---
+            return (new GeneralResponse
+            {
+                IsPass = true,
+                Data = "------------"
+            });
         }
 
         [HttpGet("users")]
