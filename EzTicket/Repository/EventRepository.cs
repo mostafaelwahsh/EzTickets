@@ -55,10 +55,22 @@ namespace EzTickets.Repository
         public Event GetById(int Id)
         {
             var TheEvent = _context.Event
-                .Where(e => e.EventID == Id) as Event;
+                .FirstOrDefault(e => e.EventID == Id);
             if (TheEvent == null)
             {
                 throw new Exception("Event not found");
+            }
+            return TheEvent;
+        }
+
+        public Event GetByIdPublic(int Id)
+        {
+            var TheEvent = _context.Event
+                .FirstOrDefault(e => e.EventID == Id && e.Status == EventStatus.Published);
+
+            if (TheEvent == null)
+            {
+                throw new Exception("Event not found or not published");
             }
             return TheEvent;
         }
