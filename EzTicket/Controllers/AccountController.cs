@@ -33,21 +33,34 @@ namespace EzTickets.Controllers
                 ApplicationUser user = new ApplicationUser
                                      {
                                          Email = userFromRequest.Email,  
+                                         UserName = userFromRequest.Email,
                                          FullName = userFromRequest.FullName,
                                          PhoneNumber = userFromRequest.PhoneNumber
                                      };
                 IdentityResult result = await _userManager.CreateAsync(user, userFromRequest.Password);
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "User");
-                    response.IsPass = true;
-                    response.Data = "User Registered Successfully";
+                    if (user.UserName == "admin@admin.com")
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, "User");
+                    }
+                    
+                    return (new GeneralResponse()
+                    {
+                        IsPass = true,
+                        Data = "User Registered Successfully"
+                    });
                 }
                 foreach (var item in result.Errors)
                 {
                     ModelState.AddModelError("", item.Description);
                 }
             }
+
             response.IsPass = false;
             response.Data = ModelState;
             return response;
