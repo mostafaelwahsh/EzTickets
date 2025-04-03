@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EzTickets.DTO;
 using EzTickets.DTO.Admin;
 using EzTickets.DTO.Public;
 using Models;
