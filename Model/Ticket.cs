@@ -5,14 +5,14 @@ namespace Models
 {
     public enum TicketStatus : byte
     {
-        Available, //0
-        SoldOut, //1
-        Expired //2
+        Available, 
+        SoldOut, 
+        Expired 
     }
     public enum TicketType : byte
     {
-        Regular, //0
-        VIP //1
+        Regular, 
+        VIP 
     }
     public class Ticket
     {
@@ -24,8 +24,12 @@ namespace Models
         public Event Event { get; set; }
 
         [ForeignKey("User")]
-        public string? UserID { get; set; } // Nullable because not all tickets may be sold
+        public string? UserID { get; set; } 
         public ApplicationUser? User { get; set; }
+
+        [ForeignKey("Order")]
+        public int? OrderID { get; set; }
+        public Order? Order { get; set; }
         public TicketType TicketType { get; set; } = TicketType.Regular;
         public decimal Price { get; set; }
         public DateTime? PurchaseDate { get; set; }

@@ -48,7 +48,7 @@ namespace EzTickets.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UpdateOrderDTO dto)
         {
-            var existing = _repository.GetAll().FirstOrDefault(o => o.Id == id);
+            var existing = _repository.GetAll().FirstOrDefault(o => o.OrderId == id);
             if (existing == null) return NotFound();
 
             _mapper.Map(dto, existing);
@@ -61,10 +61,10 @@ namespace EzTickets.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var order = _repository.GetAll().FirstOrDefault(o => o.Id == id);
+            var order = _repository.GetAll().FirstOrDefault(o => o.OrderId == id);
             if (order == null) return NotFound();
 
-            _repository.Delete(order.Id);
+            _repository.Delete(order.OrderId);
             _repository.Save();
 
             return NoContent();

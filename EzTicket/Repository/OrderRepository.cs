@@ -24,7 +24,7 @@ namespace EzTickets.Repository
         {
             return _context.Order
                 .Include(o => o.Tickets)
-                .FirstOrDefault(o => o.Id == id);
+                .FirstOrDefault(o => o.OrderId == id);
         }
 
         public void Insert(Order order)
