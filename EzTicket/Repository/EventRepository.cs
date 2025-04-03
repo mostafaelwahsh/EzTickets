@@ -40,6 +40,18 @@ namespace EzTickets.Repository
             return events;
         }
 
+        public List<Event> GetAllPublic()
+        {
+            var events = _context.Event
+                .Where(e => e.Status == EventStatus.Published)
+                .ToList();
+            if (events == null)
+            {
+                throw new Exception("No events found");
+            }
+            return events;
+        }
+
         public Event GetById(int Id)
         {
             var TheEvent = _context.Event
