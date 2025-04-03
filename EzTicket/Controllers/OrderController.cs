@@ -1,23 +1,27 @@
 ﻿using AutoMapper;
+using EzTickets.DTO.Pagination;
+using EzTickets.DTO.Public;
 using EzTickets.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 
 namespace EzTickets.Controllers
 {
-    [ApiController]
+
     [Route("api/[controller]")]
     [Produces("application/json")]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderRepository _repository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
 
-        public OrderController(IOrderRepository repository, IMapper mapper)
+        public OrderController(IOrderRepository orderRepository, IMapper mapper)
         {
-            _repository = repository;
+            _orderRepository = orderRepository;
             _mapper = mapper;
         }
+
+        #region GET Methods
 
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<List<OrderDto>>), StatusCodes.Status200OK)]
@@ -41,6 +45,40 @@ namespace EzTickets.Controllers
             return Ok(ApiResponse<OrderDto>.Ok(dto));
         }
 
+            var orderDTO = _mapper.Map<OrderDTO>(order);
+            return Ok(orderDTO);
+        }
+
+        [HttpGet("user/{userId}")]
+        public IActionResult GetOrdersByUserId(string userId)
+        {
+            var orders = _orderRepository.GetByUserId(userId);
+            if (orders == null || orders.Count == 0)
+            {
+                return NotFound();
+            }
+
+            var ordersDTO = _mapper.Map<List<OrderDTO>>(orders);
+            return Ok(ordersDTO);
+        }
+
+        [HttpGet("expiring")]
+        public IActionResult GetExpiringOrders([FromQuery] DateTime targetDate)
+        {
+            var orders = _orderRepository.GetExpiringOrders(targetDate);
+            if (orders == null || orders.Count == 0)
+            {
+                return NotFound();
+            }
+
+            var ordersDTO = _mapper.Map<List<OrderDTO>>(orders);
+            return Ok(ordersDTO);
+        }
+
+        #endregion
+
+        #region POST Method
+
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<OrderDto>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<OrderDto>), StatusCodes.Status400BadRequest)]
@@ -51,12 +89,18 @@ namespace EzTickets.Controllers
 
             var order = _mapper.Map<Order>(dto);
 
-            _repository.Insert(order);
-            _repository.Save();
+            // Map the DTO to the Order entity
+            var order = _mapper.Map<Order>(orderDTO);
+            _orderRepository.Insert(order);
+            _orderRepository.Save();
 
             var responseDto = _mapper.Map<OrderDto>(order);
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, ApiResponse<OrderDto>.Ok(responseDto, "Order created"));
         }
+
+        #endregion
+
+        #region PUT Method
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UpdateOrderDto dto)
@@ -64,12 +108,17 @@ namespace EzTickets.Controllers
             var existing = _repository.GetAll().FirstOrDefault(o => o.Id == id);
             if (existing == null) return NotFound();
 
-            _mapper.Map(dto, existing);
-            _repository.Update(existing);
-            _repository.Save();
+            // Map the updated DTO back to the Order entity
+            _mapper.Map(orderDTO, order);
+            _orderRepository.Update(order);
+            _orderRepository.Save();
 
             return Ok(ApiResponse<OrderDto>.Ok(_mapper.Map<OrderDto>(existing), "Order updated"));
         }
+
+        #endregion
+
+        #region DELETE Method
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status200OK)]
@@ -84,5 +133,8 @@ namespace EzTickets.Controllers
 
             return Ok(ApiResponse<string>.Ok(existing.Id.ToString(), "Order deleted"));
         }
+
+        #endregion
     }
+
 }

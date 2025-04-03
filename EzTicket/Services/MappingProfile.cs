@@ -43,16 +43,14 @@ namespace EzTickets.Services
                 .ForMember(dest => dest.ExpirationDate, opt => opt.Ignore())
                 //.ForMember(dest => dest.SeatNumber, opt => opt.Ignore())
                 .ForMember(dest => dest.QRCode, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()); 
-            #endregion            
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+            #endregion
 
             #region order
-            CreateMap<CreateOrderDto, Order>()
-           .ForMember(dest => dest.Tickets, opt => opt.Ignore())
-           .ForMember(dest => dest.OrderId, opt => opt.Ignore())
-           .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-           .ForMember(dest => dest.User, opt => opt.Ignore())
-           .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
+
+            CreateMap<Order, OrderDTO>()
+            .ForMember(dest => dest.Tickets, opt => opt.MapFrom(src => src.Tickets)); 
+
             #endregion
 
             #region Event
@@ -76,6 +74,7 @@ namespace EzTickets.Services
             CreateMap<Event, EventPublicDetailsDTO>();
 
             #endregion
+
             #region Admin
             CreateMap<ApplicationUser, AdminUserDetailsDTO>();
             CreateMap<ApplicationUser, RoleUpdateDTO>();

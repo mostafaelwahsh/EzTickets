@@ -22,11 +22,14 @@ namespace EzTicket
             // Add services to the container.
 
             builder.Services.AddControllers();
+
             builder.Services.AddScoped<IApplicationBuilder, ApplicationBuilder>();
             builder.Services.AddScoped<IEventRepository , EventRepository>();
             builder.Services.AddScoped<ITicketRepository , TicketRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IInfoRepository, InfoRepository>();
+
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             // Register DataContext with Connection String
@@ -36,7 +39,7 @@ namespace EzTicket
             ));
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<DataContext>();
+                .AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
             // Allow CORS
             builder.Services.AddCors(options => options.AddPolicy("EzPolicy",
@@ -107,6 +110,7 @@ namespace EzTicket
             #endregion
 
             var app = builder.Build();
+
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -131,6 +135,7 @@ namespace EzTicket
 
             app.UseStaticFiles();
             app.UseCors("EzPolicy");
+            app.UseAuthorization();
             app.UseAuthorization();
 
             app.MapControllers();
