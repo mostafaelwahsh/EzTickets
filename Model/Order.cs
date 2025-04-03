@@ -20,7 +20,7 @@ namespace Models
     public class Order
     {
         [Key]
-        public int Id { get; set; } 
+        public int OrderId { get; set; } 
 
         [ForeignKey("User")]
         public string UserID { get; set; }
