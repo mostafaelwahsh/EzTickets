@@ -58,6 +58,7 @@ namespace EzTickets.Services
 
             #region Event
 
+            // Admin Mappings (unchanged)
             CreateMap<Event, EventAdminResponseDTO>();
             CreateMap<EventAdminCreateDTO, Event>()
                 .ForMember(dest => dest.EventID, opt => opt.Ignore())
@@ -72,12 +73,8 @@ namespace EzTickets.Services
                 .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
                 .ForMember(dest => dest.Tickets, opt => opt.Ignore());
 
-            CreateMap<Event, EventPublicListDTO>()
-                .ForMember(dest => dest.AvailableTickets, opt => opt.Ignore()); 
-
-            CreateMap<Event, EventPublicDetailsDTO>()
-                .ForMember(dest => dest.TotalTickets, opt => opt.Ignore()); 
-
+            CreateMap<Event, EventPublicListDTO>(); 
+            CreateMap<Event, EventPublicDetailsDTO>();
 
             #endregion
         }
