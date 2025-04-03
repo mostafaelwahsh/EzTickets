@@ -7,6 +7,6 @@
         void Update(T obj);
         void Insert(T obj);
         void Delete(int Id);
-        int Save();
+        void Save();
     }
 }
