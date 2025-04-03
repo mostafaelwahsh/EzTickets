@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using EzTickets.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -105,5 +106,18 @@ namespace EzTickets.Controllers
             response.Data=ModelState;
             return response;
         }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<ActionResult<GeneralResponse>> Logout()
+        {
+            return Ok(new GeneralResponse
+            {
+                IsPass = true,
+                Data = "Logged out successfully. Please discard your token."
+            });
+        }
+
+        //To Do: Forget Password - Reset Password
     }
 }
