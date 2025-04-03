@@ -189,9 +189,9 @@ namespace EzTickets.Repository
             }
         }
 
-        public int Save()
+        public void Save()
         {
-            return _context.SaveChanges();
+           _context.SaveChanges();
         }
 
         public void SoftDeleteEvent(int eventId)
