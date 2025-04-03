@@ -46,7 +46,7 @@ namespace EzTickets.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] UpdateOrderDto dto)
+        public IActionResult Update(int id, [FromBody] UpdateOrderDTO dto)
         {
             var existing = _repository.GetAll().FirstOrDefault(o => o.Id == id);
             if (existing == null) return NotFound();
