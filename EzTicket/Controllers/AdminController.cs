@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using EzTickets.DTO;
+using EzTickets.DTO.Admin;
+using EzTickets.DTO.Pagination;
 using EzTickets.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

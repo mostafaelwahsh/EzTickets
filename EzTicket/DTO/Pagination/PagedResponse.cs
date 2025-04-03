@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EzTickets.DTO
+namespace EzTickets.DTO.Pagination
 {
     public class PagedResponse<T>
     {

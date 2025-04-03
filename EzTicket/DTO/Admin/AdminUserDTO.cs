@@ -1,4 +1,4 @@
-﻿namespace EzTickets.DTO
+﻿namespace EzTickets.DTO.Admin
 {
     public class AdminUserDTO
     {

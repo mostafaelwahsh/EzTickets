@@ -1,6 +1,6 @@
 ﻿using Models;
 
-namespace EzTickets.DTO
+namespace EzTickets.DTO.Public
 {
     public class TicketCreateDTO
     {

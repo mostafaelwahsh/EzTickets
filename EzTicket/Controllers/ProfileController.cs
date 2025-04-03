@@ -1,4 +1,4 @@
-﻿using EzTickets.DTO;
+﻿using EzTickets.DTO.Public;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

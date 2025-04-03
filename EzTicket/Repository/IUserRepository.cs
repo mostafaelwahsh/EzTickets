@@ -1,4 +1,5 @@
-﻿using EzTickets.DTO;
+﻿using EzTickets.DTO.Admin;
+using EzTickets.DTO.Pagination;
 using Models;
 
 namespace EzTickets.Repository

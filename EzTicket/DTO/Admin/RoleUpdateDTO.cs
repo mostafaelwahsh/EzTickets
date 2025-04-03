@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EzTickets.DTO
+namespace EzTickets.DTO.Admin
 {
     public class RoleUpdateDTO
     {
