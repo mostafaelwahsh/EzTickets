@@ -9,7 +9,7 @@ namespace EzTickets.Controllers
 {
 
     [Route("api/[controller]")]
-    [ApiController]
+    [Produces("application/json")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _orderRepository;
@@ -24,21 +24,26 @@ namespace EzTickets.Controllers
         #region GET Methods
 
         [HttpGet]
-        public IActionResult GetAllOrders([FromQuery] PaginationParams paginationParams)
+        [ProducesResponseType(typeof(ApiResponse<List<OrderDto>>), StatusCodes.Status200OK)]
+        public IActionResult GetAll()
         {
-            var pagedOrders = _orderRepository.GetPagedOrders(paginationParams);
-            var pagedOrdersDTO = _mapper.Map<PagedResponse<OrderDTO>>(pagedOrders);
-            return Ok(pagedOrdersDTO);
+            var orders = _repository.GetAll();
+            var result = _mapper.Map<List<OrderDto>>(orders);
+            return Ok(ApiResponse<List<OrderDto>>.Ok(result));
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetOrderById(int id)
+        [ProducesResponseType(typeof(ApiResponse<OrderDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<OrderDto>), StatusCodes.Status404NotFound)]
+        public IActionResult GetById(int id)
         {
-            var order = _orderRepository.GetById(id);
+            var order = _repository.GetById(id);
             if (order == null)
-            {
-                return NotFound();
-            }
+                return NotFound(ApiResponse<OrderDto>.Fail("Order not found"));
+
+            var dto = _mapper.Map<OrderDto>(order);
+            return Ok(ApiResponse<OrderDto>.Ok(dto));
+        }
 
             var orderDTO = _mapper.Map<OrderDTO>(order);
             return Ok(orderDTO);
@@ -75,19 +80,22 @@ namespace EzTickets.Controllers
         #region POST Method
 
         [HttpPost]
-        public IActionResult CreateOrder([FromBody] OrderDTO orderDTO)
+        [ProducesResponseType(typeof(ApiResponse<OrderDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<OrderDto>), StatusCodes.Status400BadRequest)]
+        public IActionResult Create([FromBody] CreateOrderDto dto)
         {
-            if (orderDTO == null)
-            {
-                return BadRequest("Order data is null.");
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ApiResponse<OrderDto>.Fail("Invalid order data"));
+
+            var order = _mapper.Map<Order>(dto);
 
             // Map the DTO to the Order entity
             var order = _mapper.Map<Order>(orderDTO);
             _orderRepository.Insert(order);
             _orderRepository.Save();
 
-            return CreatedAtAction(nameof(GetOrderById), new { id = order.OrderId }, orderDTO);
+            var responseDto = _mapper.Map<OrderDto>(order);
+            return CreatedAtAction(nameof(GetById), new { id = order.Id }, ApiResponse<OrderDto>.Ok(responseDto, "Order created"));
         }
 
         #endregion
@@ -95,25 +103,17 @@ namespace EzTickets.Controllers
         #region PUT Method
 
         [HttpPut("{id}")]
-        public IActionResult UpdateOrder(int id, [FromBody] OrderDTO orderDTO)
+        public IActionResult Update(int id, [FromBody] UpdateOrderDto dto)
         {
-            if (orderDTO == null || id != orderDTO.OrderId)
-            {
-                return BadRequest("Order data is invalid.");
-            }
-
-            var order = _orderRepository.GetById(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
+            var existing = _repository.GetAll().FirstOrDefault(o => o.Id == id);
+            if (existing == null) return NotFound();
 
             // Map the updated DTO back to the Order entity
             _mapper.Map(orderDTO, order);
             _orderRepository.Update(order);
             _orderRepository.Save();
 
-            return NoContent(); // Return 204 No Content to indicate success
+            return Ok(ApiResponse<OrderDto>.Ok(_mapper.Map<OrderDto>(existing), "Order updated"));
         }
 
         #endregion
@@ -121,18 +121,17 @@ namespace EzTickets.Controllers
         #region DELETE Method
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteOrder(int id)
+        [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status404NotFound)]
+        public IActionResult Delete(int id)
         {
-            var order = _orderRepository.GetById(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
+            var order = _repository.GetAll().FirstOrDefault(o => o.Id == id);
+            if (order == null) return NotFound();
 
-            _orderRepository.Delete(id);
-            _orderRepository.Save();
+            _repository.Delete(order.Id);
+            _repository.Save();
 
-            return NoContent(); // Return 204 No Content to indicate success
+            return Ok(ApiResponse<string>.Ok(existing.Id.ToString(), "Order deleted"));
         }
 
         #endregion
