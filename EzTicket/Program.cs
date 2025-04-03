@@ -15,7 +15,7 @@ namespace EzTicket
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -107,6 +107,19 @@ namespace EzTicket
             #endregion
 
             var app = builder.Build();
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                // Ensure these match exactly what you use in AddToRoleAsync()
+                var roles = new[] { "Admin", "User" };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -114,6 +127,7 @@ namespace EzTicket
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
 
             app.UseStaticFiles();
             app.UseCors("EzPolicy");
