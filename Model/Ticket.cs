@@ -20,7 +20,7 @@ namespace Models
         public string TicketID { get; set; } = Guid.NewGuid().ToString();
 
         [ForeignKey("Event")]
-        public string EventID { get; set; }
+        public int EventID { get; set; }
         public Event Event { get; set; }
 
         [ForeignKey("User")]
