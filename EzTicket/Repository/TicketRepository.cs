@@ -91,7 +91,7 @@ namespace EzTickets.Repository
         }
 
         // Additional query methods
-        public List<Ticket> GetTicketsByEventId(string eventId)
+        public List<Ticket> GetTicketsByEventId(int eventId)
         {
             return _context.Ticket
                 .Where(t => t.EventID == eventId && !t.IsDeleted)
@@ -151,7 +151,7 @@ namespace EzTickets.Repository
         }
 
         // Statistics methods
-        public int GetAvailableTicketsCountByEvent(string eventId)
+        public int GetAvailableTicketsCountByEvent(int eventId)
         {
             return _context.Ticket
                 .Count(t => t.EventID == eventId &&
@@ -159,7 +159,7 @@ namespace EzTickets.Repository
                            !t.IsDeleted);
         }
 
-        public decimal GetTotalSalesByEvent(string eventId)
+        public decimal GetTotalSalesByEvent(int eventId)
         {
             return _context.Ticket
                 .Where(t => t.EventID == eventId &&

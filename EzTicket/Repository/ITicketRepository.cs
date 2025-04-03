@@ -10,7 +10,7 @@ namespace EzTickets.Repository
         void DeleteById(string id);
 
         // Additional query methods
-        List<Ticket> GetTicketsByEventId(string eventId);
+        List<Ticket> GetTicketsByEventId(int eventId);
         List<Ticket> GetTicketsByUserId(string userId);
         List<Ticket> GetTicketsByStatus(TicketStatus status);
         List<Ticket> GetTicketsByType(TicketType type);
@@ -23,8 +23,8 @@ namespace EzTickets.Repository
        
 
         // Statistics methods
-        int GetAvailableTicketsCountByEvent(string eventId);
-        decimal GetTotalSalesByEvent(string eventId);
+        int GetAvailableTicketsCountByEvent(int eventId);
+        decimal GetTotalSalesByEvent(int eventId);
 
         // Generate QR code for ticket
         string GenerateQRCode(string ticketId);
