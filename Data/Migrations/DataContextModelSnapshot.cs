@@ -231,8 +231,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Models.Event", b =>
                 {
-                    b.Property<string>("EventID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("EventID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventID"));
 
                     b.Property<int>("AvailableTickets")
                         .HasColumnType("int");
@@ -268,9 +271,6 @@ namespace Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OrganizerID")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<decimal>("PricePerTicket")
                         .HasColumnType("decimal(18,2)");
 
@@ -289,18 +289,16 @@ namespace Data.Migrations
 
                     b.HasKey("EventID");
 
-                    b.HasIndex("OrganizerID");
-
                     b.ToTable("Event");
                 });
 
             modelBuilder.Entity("Models.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -327,7 +325,7 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.HasKey("OrderId");
 
                     b.HasIndex("UserID");
 
@@ -391,9 +389,8 @@ namespace Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EventID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("EventID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime2");
@@ -401,7 +398,7 @@ namespace Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int?>("OrderID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -429,7 +426,7 @@ namespace Data.Migrations
 
                     b.HasIndex("EventID");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderID");
 
                     b.HasIndex("UserID");
 
@@ -487,15 +484,6 @@ namespace Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Models.Event", b =>
-                {
-                    b.HasOne("Models.ApplicationUser", "Organizer")
-                        .WithMany()
-                        .HasForeignKey("OrganizerID");
-
-                    b.Navigation("Organizer");
-                });
-
             modelBuilder.Entity("Models.Order", b =>
                 {
                     b.HasOne("Models.ApplicationUser", "User")
@@ -532,15 +520,17 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Order", null)
+                    b.HasOne("Models.Order", "Order")
                         .WithMany("Tickets")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderID");
 
                     b.HasOne("Models.ApplicationUser", "User")
                         .WithMany("Tickets")
                         .HasForeignKey("UserID");
 
                     b.Navigation("Event");
+
+                    b.Navigation("Order");
 
                     b.Navigation("User");
                 });

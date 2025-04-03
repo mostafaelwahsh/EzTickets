@@ -28,12 +28,17 @@ namespace EzTickets.Controllers
 
         // GET: api/event
         [HttpGet]
-        public IActionResult GetAllEvents()
+        public ActionResult<GeneralResponse> GetAllEvents()
         {
             try
             {
                 var events = _eventRepository.GetAllPublic();
-                return Ok(_mapper.Map<List<EventPublicListDTO>>(events));
+                var eventDTO = _mapper.Map<EventPublicListDTO>(events);
+                return new GeneralResponse(){
+                    IsPass = true,
+                    Data = events
+                }
+                ;
             }
             catch (Exception ex)
             {
