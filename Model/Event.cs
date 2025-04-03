@@ -21,7 +21,7 @@ namespace Models
     public class Event
     {
         [Key]
-        public int EventID { get; set; }
+        public int EventID { get; set; }    
         public string EventName { get; set; }
         public string Description { get; set; }
         public string VenueName { get; set; }

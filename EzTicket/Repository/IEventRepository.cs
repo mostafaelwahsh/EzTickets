@@ -5,6 +5,7 @@ namespace EzTickets.Repository
     public interface IEventRepository : IRepository<Event>
     {
         List<Event> GetAllPublic();
+        Event GetByIdPublic(int Id);
         List<Event> GetEventsByCity(string city);
         List<Event> GetEventsByCountry(string country);
         List<Event> GetEventsByDate(DateTime date);
