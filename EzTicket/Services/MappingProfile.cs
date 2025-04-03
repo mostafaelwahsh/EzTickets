@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Data;
 using EzTickets.DTO;
+using EzTickets.DTO.Admin;
+using EzTickets.DTO.Public;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Models;
 
@@ -54,6 +56,30 @@ namespace EzTickets.Services
            .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
             #endregion
 
+            #region Event
+
+            CreateMap<Event, EventAdminResponseDTO>();
+            CreateMap<EventAdminCreateDTO, Event>()
+                .ForMember(dest => dest.EventID, opt => opt.Ignore())
+                .ForMember(dest => dest.AvailableTickets, opt => opt.MapFrom(src => src.TotalTickets))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+                .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false))
+                .ForMember(dest => dest.Tickets, opt => opt.Ignore());
+
+            CreateMap<EventAdminUpdateDTO, Event>()
+                .ForMember(dest => dest.AvailableTickets, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+                .ForMember(dest => dest.Tickets, opt => opt.Ignore());
+
+            CreateMap<Event, EventPublicListDTO>()
+                .ForMember(dest => dest.AvailableTickets, opt => opt.Ignore()); 
+
+            CreateMap<Event, EventPublicDetailsDTO>()
+                .ForMember(dest => dest.TotalTickets, opt => opt.Ignore()); 
+
+
+            #endregion
         }
     }
 }
