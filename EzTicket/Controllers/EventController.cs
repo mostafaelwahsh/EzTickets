@@ -67,6 +67,69 @@ namespace EzTickets.Controllers
             }
         }
 
+        [HttpGet("filter")]
+        public ActionResult<GeneralResponse> GetFilteredEvents([FromQuery] EventPublicFilterDTO filter)
+        {
+            try
+            {
+                IEnumerable<Event> events = _eventRepository.GetAllPublic();
+
+                if (!string.IsNullOrEmpty(filter.SearchQuery))
+                {
+                    events = _eventRepository.GetEventsByName(filter.SearchQuery);
+                }
+
+                if (filter.Category.HasValue)
+                {
+                    events = events.Intersect(_eventRepository.GetEventsByCategory(filter.Category.Value));
+                }
+
+                if (!string.IsNullOrEmpty(filter.City))
+                {
+                    events = events.Intersect(_eventRepository.GetEventsByCity(filter.City));
+                }
+
+                if (!string.IsNullOrEmpty(filter.VenueName))
+                {
+                    events = events.Intersect(_eventRepository.GetEventsByVenue(filter.VenueName));
+                }
+
+                if (filter.MinPrice.HasValue || filter.MaxPrice.HasValue)
+                {
+                    events = events.Intersect(_eventRepository.GetEventsByPriceRange(
+                        filter.MinPrice ?? 0,
+                        filter.MaxPrice ?? decimal.MaxValue));
+                }
+
+                if (filter.StartDate.HasValue && filter.EndDate.HasValue)
+                {
+                    events = events.Intersect(_eventRepository.GetEventsByDateRange(
+                        filter.StartDate.Value,
+                        filter.EndDate.Value));
+                }
+                else if (filter.StartDate.HasValue)
+                {
+                    events = events.Intersect(_eventRepository.GetEventsByDate(filter.StartDate.Value));
+                }
+
+                var result = events.ToList();
+                var mappedResults = _mapper.Map<List<EventPublicListDTO>>(result);
+
+                return new GeneralResponse
+                {
+                    IsPass = true,
+                    Data = mappedResults
+                };
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse
+                {
+                    IsPass = false,
+                };
+            }
+        }
+
         #endregion
 
         #region Admin Endpoints

@@ -8,6 +8,7 @@ namespace EzTickets.DTO.Public
         public string? SearchQuery { get; set; }
         public string? City { get; set; }
         public string? Country { get; set; }
+        public string? VenueName { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public decimal? MinPrice { get; set; }
