@@ -1,26 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Models;
+using System;
 
-namespace Models
+namespace EzTickets.DTO.Admin
 {
-    public enum EventStatus : byte
+    public class EventAdminResponseDTO
     {
-        Draft,
-        Published,
-        Canceled,
-        Completed
-    }
-    public enum EventCategoryType : byte
-    {
-        Music,
-        Sports,
-        Conference,
-        Theater,
-        Other
-    }
-    public class Event
-    {
-        [Key]
         public int EventID { get; set; }
         public string EventName { get; set; }
         public string Description { get; set; }
@@ -33,12 +17,9 @@ namespace Models
         public int AvailableTickets { get; set; }
         public decimal PricePerTicket { get; set; }
         public string? ImageUrl { get; set; }
-        public EventStatus Status { get; set; } = EventStatus.Draft;
-
+        public EventStatus Status { get; set; }
         public EventCategoryType Category { get; set; }
         public DateTime CreatedAt { get; set; }
-        public bool IsDeleted { get; set; } = false;
-        public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-
+        public bool IsDeleted { get; set; }
     }
 }
