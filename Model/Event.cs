@@ -21,7 +21,7 @@ namespace Models
     public class Event
     {
         [Key]
-        public string EventID { get; set; } = Guid.NewGuid().ToString();
+        public int EventID { get; set; }
         public string EventName { get; set; }
         public string Description { get; set; }
         public string VenueName { get; set; }
@@ -36,10 +36,6 @@ namespace Models
         public EventStatus Status { get; set; } = EventStatus.Draft;
 
         public EventCategoryType Category { get; set; }
-
-        [ForeignKey("Organizer")]
-        public string? OrganizerID { get; set; }
-        public ApplicationUser? Organizer { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
