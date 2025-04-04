@@ -29,5 +29,6 @@ namespace EzTickets.Repository
         DateTime? startDate = null,
         DateTime? endDate = null,
         PaginationParams? pagination = null);
+        Task<bool> PublishEvent(int eventId);
     }
 }

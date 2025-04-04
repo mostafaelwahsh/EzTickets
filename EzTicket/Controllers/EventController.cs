@@ -169,6 +169,22 @@ namespace EzTickets.Controllers
             }
         }
 
+        //[Authorize(Roles = "Admin")]
+        [HttpPost("{id}/publish")]
+        public async Task<IActionResult> PublishEvent(int id)
+        {
+            var success = await _eventRepository.PublishEvent(id);
+
+            if (!success)
+                return BadRequest("Event not found or already published");
+
+            return Ok(new
+            {
+                Message = "Event published successfully",
+                EventId = id
+            });
+        }
+
         // PUT: api/event/5
         //[Authorize(Roles = "Admin")]
         [HttpPut("{id}")]

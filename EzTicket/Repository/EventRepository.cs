@@ -296,5 +296,35 @@ namespace EzTickets.Repository
                 totalRecords);
         }
 
+        public async Task<bool> PublishEvent(int eventId)
+        {
+            var @event = await _context.Event
+                .Include(e => e.Tickets)
+                .FirstOrDefaultAsync(e => e.EventID == eventId);
+
+            if (@event == null || @event.Status == EventStatus.Published)
+                return false;
+
+            if (!@event.Tickets.Any())
+            {
+                var tickets = Enumerable.Range(0, @event.TotalTickets)
+                    .Select(i => new Ticket
+                    {
+                        EventID = eventId,
+                        TicketStatus = TicketStatus.Available,
+                        SeatNumber = @event.VenueName.Contains("GA") ? null : i + 1,
+                        Price = @event.PricePerTicket,
+                        CreatedAt = DateTime.UtcNow
+                    }).ToList();
+
+                await _context.Ticket.AddRangeAsync(tickets);
+            }
+
+            @event.Status = EventStatus.Published;
+            @event.AvailableTickets = @event.TotalTickets - @event.Tickets.Count(t => t.TicketStatus == TicketStatus.SoldOut);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
     }
 }
