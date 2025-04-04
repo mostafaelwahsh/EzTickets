@@ -238,19 +238,19 @@ namespace EzTickets.Repository
 
         public void Update(Event obj)
         {
-            _context.Entry(obj).State = EntityState.Modified;
+            _context.Event.Update(obj);
         }
 
         public PagedResponse<Event> GetFilteredPublicEvents(
-    string? searchQuery = null,
-    EventCategoryType? category = null,
-    string? city = null,
-    string? venue = null,
-    decimal? minPrice = null,
-    decimal? maxPrice = null,
-    DateTime? startDate = null,
-    DateTime? endDate = null,
-    PaginationParams? pagination = null)
+                                                         string? searchQuery = null,
+                                                         EventCategoryType? category = null,
+                                                         string? city = null,
+                                                         string? venue = null,
+                                                         decimal? minPrice = null,
+                                                         decimal? maxPrice = null,
+                                                         DateTime? startDate = null,
+                                                         DateTime? endDate = null,
+                                                         PaginationParams? pagination = null)
         {
             // Default pagination if not provided
             pagination ??= new PaginationParams();

@@ -68,6 +68,10 @@ namespace EzTickets.Repository
             }
         }
 
+        public void UpdateRangeofTickets(List<Ticket> availableTickets)
+        {
+            _context.Ticket.UpdateRange(availableTickets);
+        }
         public void Save()
         {
             _context.SaveChanges();
@@ -77,11 +81,8 @@ namespace EzTickets.Repository
         public List<Ticket> GetTicketsByEventId(int eventId)
         {
             return _context.Ticket
-                .Where(t => t.EventID == eventId && !t.IsDeleted)
-                .Include(t => t.Event)
-                .Include(t => t.User)
-                .Include(t => t.Order)
-                .ToList();
+                .Where(t => t.EventID == eventId && !t.IsDeleted && t.TicketStatus==TicketStatus.Available).ToList();
+                
         }
 
         public List<Ticket> GetTicketsByUserId(string userId)

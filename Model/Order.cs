@@ -25,12 +25,10 @@ namespace Models
         [ForeignKey("User")]
         public string UserID { get; set; } = string.Empty;    
         public ApplicationUser? User { get; set; }             
-
-
         public decimal TotalAmount { get; set; }
         public decimal? DiscountAmount { get; set; }
         public OrderStatus OrderStatus { get; set; } 
-        public PaymentMethod PaymentMethod { get; set; }
+        public PaymentMethod? PaymentMethod { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; } = false;

@@ -42,6 +42,12 @@ namespace EzTickets.Repository
                 .FirstOrDefault(o => o.OrderId == id && o.IsDeleted == false);
         }
 
+        public Order LastOrder()
+        {
+            return   _context.Order
+                      .OrderByDescending(o => o.CreatedAt)
+                      .FirstOrDefault();
+        }
 
         public void Insert(Order order)
         {

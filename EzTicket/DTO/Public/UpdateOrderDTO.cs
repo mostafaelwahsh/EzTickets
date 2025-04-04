@@ -2,7 +2,7 @@
 using EzTickets.DTO.Public;
 
 
-public class UpdateOrderDto
+public class UpdateOrderDTO
 {
     public decimal? TotalAmount { get; set; }
     public decimal? DiscountAmount { get; set; }

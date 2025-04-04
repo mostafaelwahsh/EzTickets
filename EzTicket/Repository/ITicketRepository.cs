@@ -1,18 +1,19 @@
-﻿using Models;
-using EzTickets.DTO;
+﻿using EzTickets.DTO;
 using EzTickets.DTO.Pagination;
+using Models;
 
 namespace EzTickets.Repository
 {
-    public interface ITicketRepository 
+    public interface ITicketRepository
     {
         // Get by string ID (matching your model)
         List<Ticket> GetAll(PaginationParams pagination);
         void Insert(Ticket obj);
         void Save();
-        void Update (Ticket obj);
+        void Update(Ticket obj);
         Ticket GetById(string id);
         void DeleteById(string id);
+        void UpdateRangeofTickets(List<Ticket> availableTickets);
 
         // Additional query methods
         List<Ticket> GetTicketsByEventId(int eventId);

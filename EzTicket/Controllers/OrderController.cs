@@ -15,12 +15,15 @@ namespace EzTickets.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ITicketRepository _ticketRepository;
+        private readonly IEventRepository _eventRepository;
         private readonly IMapper _mapper;
 
-        public OrderController(IOrderRepository orderRepository, ITicketRepository ticketRepository, IMapper mapper)
+        public OrderController(IOrderRepository orderRepository, ITicketRepository ticketRepository,
+            IEventRepository eventRepository, IMapper mapper)
         {
             _orderRepository = orderRepository;
             _ticketRepository = ticketRepository;
+            _eventRepository = eventRepository;
             _mapper = mapper;
         }
 
@@ -87,46 +90,72 @@ namespace EzTickets.Controllers
         #region POST
 
         [HttpPost]
-        //public Order CreateOrder(int eventId, int ticketCount, string userId)
-        //{
-        //    // Get available tickets
-        //    var availableTickets = _context.Tickets
-        //        .Where(t => t.EventID == eventId && t.TicketStatus == TicketStatus.Available)
-        //        .Take(ticketCount)
-        //        .ToList();
+        public ActionResult<GeneralResponse> CreateOrder(int eventId, int ticketCount, string userId,decimal discount=0)
+        {
+            // Get available tickets
+            var availableTickets = _ticketRepository.GetTicketsByEventId(eventId);
 
-        //    // Create order
-        //    var order = new Order
-        //    {
-        //        UserID = userId,
-        //        OrderStatus = OrderStatus.Pending,
-        //        Tickets = availableTickets,
-        //        TotalAmount = availableTickets.Sum(t => t.Price),
-        //        CreatedAt = DateTime.UtcNow
-        //    };
+            if (availableTickets == null || availableTickets.Count == 0)
+                throw new InvalidOperationException("No available tickets for this event.");
 
-        //    // Update tickets
-        //    foreach (var ticket in availableTickets)
-        //    {
-        //        ticket.TicketStatus = TicketStatus.SoldOut;
-        //        ticket.OrderID = order.OrderId;
-        //        ticket.PurchaseDate = DateTime.UtcNow;
-        //    }
+            decimal ticketPrice = availableTickets[0].Price;
+            decimal totalAmount = ticketPrice * ticketCount;
+            decimal discountAmount = 0;
 
-        //    // Update event
-        //    var @event = _context.Events.Find(eventId);
-        //    @event.AvailableTickets -= ticketCount;
+            if (discount > 0)
+            {
+                discountAmount = (totalAmount * discount) / 100;
+                totalAmount -= discountAmount;
+            }
 
-        //    _context.SaveChanges();
-        //    return order;
-        //}
+            // Create order
+            var order = new Order
+            {
+                UserID = userId,
+                OrderStatus = OrderStatus.Pending,                
+                TotalAmount = totalAmount,
+                DiscountAmount = discountAmount,
+                CreatedAt = DateTime.UtcNow
+            };
 
-        //#endregion
+            _orderRepository.Insert(order);
+            _orderRepository.Save();
 
-        //#region PUT
+            Order orderdone =_orderRepository.LastOrder();
+            
+            // Update tickets
+            foreach (var ticket in availableTickets)
+            {
+                ticket.TicketStatus = TicketStatus.SoldOut;
+                ticket.OrderID = orderdone.OrderId;
+                ticket.PurchaseDate = DateTime.UtcNow;
+            }
+
+            _ticketRepository.UpdateRangeofTickets(availableTickets);
+            _ticketRepository.Save();
+
+            // Update event
+            var _event = _eventRepository.GetById(eventId);
+            _event.AvailableTickets -= ticketCount;
+
+            _eventRepository.Update(_event);
+            _eventRepository.Save();
+
+            var respone = new GeneralResponse
+            {
+                IsPass = true,
+                Data = _mapper.Map<CreateOrderResponseDTO>(order)
+            };
+
+            return respone;
+        }
+
+        #endregion
+
+        #region PUT
 
         //[HttpPut("{id}")]
-        //public IActionResult Update(int id, [FromBody] UpdateOrderDto dto)
+        //public IActionResult Update(int id, [FromBody] UpdateOrderDTO dto)
         //{
         //    var existing = _orderRepository.GetById(id);
         //    if (existing == null)
@@ -140,7 +169,7 @@ namespace EzTickets.Controllers
         //    return Ok(ApiResponse<OrderDTO>.Ok(resultDto, "Order updated"));
         //}
 
-        #endregion
+#endregion
 
         #region DELETE
 

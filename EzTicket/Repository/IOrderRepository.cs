@@ -12,6 +12,7 @@ namespace EzTickets.Repository
 
         List<Order> GetExpiringOrders(DateTime targetDate);
 
+        Order LastOrder();
 
         PagedResponse<Order> GetPagedOrders(PaginationParams paginationParams);
 
