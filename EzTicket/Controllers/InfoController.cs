@@ -1,9 +1,6 @@
 ﻿using EzTickets.DTO.Public;
 using EzTickets.Repository;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EzTickets.Controllers
 {

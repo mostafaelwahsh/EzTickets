@@ -2,12 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Models;
 using EzTickets.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
 using EzTickets.DTO.Public;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Data;
 using EzTickets.DTO.Pagination;
@@ -21,19 +17,18 @@ namespace EzTickets.Controllers
         private readonly ITicketRepository _ticketRepository;
         private readonly IMapper _mapper;
         private readonly IEventRepository _eventRepository;
-        private readonly IOrderRepository orderRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        public TicketController(ITicketRepository ticketRepository, IMapper mapper, IEventRepository eventRepository, IOrderRepository orderRepository, DataContext dataContext)
+        public TicketController(ITicketRepository ticketRepository, IMapper mapper,
+                                IEventRepository eventRepository, IOrderRepository orderRepository)
         {
             _ticketRepository = ticketRepository;
             _mapper = mapper;
             _eventRepository = eventRepository;
-            this.orderRepository = orderRepository;
+            _orderRepository = orderRepository;
         }
 
-        #region Public Actions
-
-        // GET: api/Ticket
+        [Authorize(Roles ="Admin")]
         [HttpGet]
         public ActionResult<GeneralResponse> GetAllTickets([FromQuery] PaginationParams pagination)
         {
@@ -55,11 +50,11 @@ namespace EzTickets.Controllers
                     IsPass = false,
                     Data = null
                 };
-                return StatusCode(500, response);
+                return response;
             }
         }
 
-        // GET: api/Ticket/5
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public ActionResult<GeneralResponse> GetTicket(string id)
         {
@@ -67,26 +62,26 @@ namespace EzTickets.Controllers
 
             if (ticket == null)
             {
-                var response = new GeneralResponse
+                GeneralResponse response = new GeneralResponse
                 {
                     IsPass = false,
                     Data = null
                 };
-                return NotFound(response);
+                return (response);
             }
 
-            var responseData = new GeneralResponse
+            GeneralResponse responseData = new GeneralResponse
             {
                 IsPass = true,
                 Data = _mapper.Map<TicketResponseDTO>(ticket)
             };
 
-            return Ok(responseData);
+            return responseData;
         }
 
-        // GET: api/Ticket/event/5
+        [Authorize(Roles = "Admin")]
         [HttpGet("event/{eventId}")]
-        public ActionResult<GeneralResponse> GetTicketsByEvent(int eventId, [FromQuery] TicketStatus ticketStatus)
+        public ActionResult<GeneralResponse> GetTicketsByEvent(int eventId, TicketStatus ticketStatus)
         {
             var tickets = _ticketRepository.GetTicketsByEventId(eventId);
 
@@ -97,92 +92,16 @@ namespace EzTickets.Controllers
 
             var ticketDTOs = _mapper.Map<List<TicketResponseDTO>>(tickets);
 
-            var response = new GeneralResponse
+            GeneralResponse response = new GeneralResponse
             {
                 IsPass = true,
                 Data = ticketDTOs
             };
-
-            return Ok(response);
+            return response;
         }
 
-        #endregion
-
-        #region Admin Actions
-
-        // POST: api/Ticket/bulk
-        [HttpPost("bulk")]
-        [Authorize(Roles = "Admin")]
-        public ActionResult<GeneralResponse> CreateBulkTickets([FromQuery] int eventId, [FromQuery] int count, [FromQuery] decimal price, [FromQuery] TicketType ticketType = TicketType.Regular)
-        {
-            if (count <= 0 || count > 1000)
-            {
-                var generalresponse = new GeneralResponse
-                {
-                    IsPass = false,
-                    Data = null
-                };
-                return BadRequest(generalresponse);
-            }
-
-            var tickets = Enumerable.Range(0, count)
-                .Select(_ => new TicketCreateDTO
-                {
-                    EventID = eventId,
-                    Price = price,
-                    TicketType = ticketType
-                })
-                .Select(dto => _mapper.Map<Ticket>(dto))
-                .ToList();
-
-            tickets.ForEach(t => _ticketRepository.Insert(t));
-            _ticketRepository.Save();
-
-            var ticketDTOs = _mapper.Map<List<TicketResponseDTO>>(tickets);
-            var response = new GeneralResponse
-            {
-                IsPass = true,
-                Data = ticketDTOs
-            };
-
-            return CreatedAtAction(nameof(GetTicketsByEvent), new { eventId = eventId }, response);
-        }
-
-        // DELETE: api/Ticket/5
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public ActionResult<GeneralResponse> DeleteTicket(string id)
-        {
-            var ticket = _ticketRepository.GetById(id);
-            if (ticket == null)
-            {
-                var generalresponse = new GeneralResponse
-                {
-                    IsPass = false,
-                    Data = null
-                };
-                return NotFound(generalresponse);
-            }
-
-            _ticketRepository.DeleteById(id);
-            _ticketRepository.Save();
-
-            var response = new GeneralResponse
-            {
-                IsPass = true,
-                Data = null
-            };
-
-            return Ok(response);
-        }
-
-        #endregion
-
-        #region User Actions
-        #region GetMyTickets
-
-        [HttpGet("mytickets")]
-        [Authorize(Roles = "User")]
+        [HttpGet("my-tickets")]
+        [Authorize]
         public ActionResult<GeneralResponse> GetMyTickets()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -205,73 +124,11 @@ namespace EzTickets.Controllers
                 Data = ticketDTOs
             };
 
-            return Ok(response);
+            return response;
         }
 
-        #endregion
-        #region Purchase Actions
-
-        [HttpPost("purchase/event/{eventId}")]
-        [Authorize(Roles = "User")]
-        public ActionResult<GeneralResponse> PurchaseTickets(int eventId, int numOfTickets)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var availableTickets = _ticketRepository.GetTicketsByEventId(eventId)
-                                      .Where(t => t.TicketStatus == TicketStatus.Available)
-                                      .Take(numOfTickets)
-                                      .ToList();
-
-            if (availableTickets.Count < numOfTickets)
-            {
-                return NotFound(new GeneralResponse
-                {
-                    IsPass = false,
-                    Data = null
-                });
-            }
-
-            var order = new Order
-            {
-                UserID = userId,
-                CreatedAt = DateTime.UtcNow,
-                TotalAmount = availableTickets.Sum(t => t.Price), 
-                OrderStatus = OrderStatus.Pending 
-            };
-
-            orderRepository.Insert(order);
-            orderRepository.Save(); 
-
-            foreach (var ticket in availableTickets)
-            {
-                ticket.UserID = userId;
-                ticket.PurchaseDate = DateTime.UtcNow;
-                ticket.TicketStatus = TicketStatus.SoldOut;
-                ticket.OrderID = order.OrderId; // Assign the generated OrderID
-
-                _ticketRepository.Update(ticket);
-            }
-
-            _ticketRepository.Save();
-
-          
-            var ticketDTOs = _mapper.Map<List<TicketResponseDTO>>(availableTickets);
-            return Ok(new GeneralResponse
-            {
-                IsPass = true,
-                Data = new
-                {
-                    OrderId = order.OrderId,
-                    Tickets = ticketDTOs
-                }
-            });
-        }
-
-        #endregion
-
-
-        // GET: api/Ticket/user/userid
         [HttpGet("user/{userId}")]
-        [Authorize(Roles = "User, Admin")]
+        [Authorize(Roles = "Admin")]
         public ActionResult<GeneralResponse> GetTicketsByUser(string userId)
         {
             var tickets = _ticketRepository.GetTicketsByUserId(userId);
@@ -283,12 +140,11 @@ namespace EzTickets.Controllers
                 Data = ticketDTOs
             };
 
-            return Ok(response);
+            return response;
         }
 
-       
         [HttpPut("{id}")]
-        [Authorize(Roles = "User, Admin")]
+        [Authorize(Roles = "Admin")]
         public ActionResult<GeneralResponse> UpdateTicket(string id, TicketUpdateDTO ticketDTO)
         {
             var ticket = _ticketRepository.GetById(id);
@@ -299,7 +155,7 @@ namespace EzTickets.Controllers
                     IsPass = false,
                     Data = null
                 };
-                return NotFound(generalresponse);
+                return generalresponse;
             }
 
             _mapper.Map(ticketDTO, ticket);
@@ -312,12 +168,8 @@ namespace EzTickets.Controllers
                 Data = ticket
             };
 
-            return Ok(response);
+            return response;
         }
-
-        #endregion
-
-       
 
     }
 }

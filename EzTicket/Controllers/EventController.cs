@@ -24,7 +24,6 @@ namespace EzTickets.Controllers
 
         #region Public Endpoints
 
-        // GET: api/event (for public view)
         [HttpGet]
         public ActionResult<GeneralResponse> GetAllEventsPublic([FromQuery] PaginationParams pagination)
         {
@@ -52,7 +51,6 @@ namespace EzTickets.Controllers
             }
         }
 
-        // GET: api/event/5
         [HttpGet("{id}")]
         public ActionResult<GeneralResponse> GetEventById(int id)
         {
@@ -114,7 +112,6 @@ namespace EzTickets.Controllers
 
         #region Admin Endpoints
 
-        // GET: api/event/admin (for admin view)
         [Authorize(Roles = "Admin")]
         [HttpGet("admin")]
         public ActionResult<GeneralResponse> GetAllEventsAdmin([FromQuery] PaginationParams pagination)
@@ -143,8 +140,7 @@ namespace EzTickets.Controllers
             }
         }
 
-        // POST: api/event
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult<GeneralResponse> CreateEvent([FromBody] EventAdminCreateDTO eventDto)
         {
@@ -169,7 +165,7 @@ namespace EzTickets.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("{id}/publish")]
         public async Task<IActionResult> PublishEvent(int id)
         {
@@ -185,8 +181,7 @@ namespace EzTickets.Controllers
             });
         }
 
-        // PUT: api/event/5
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public ActionResult<GeneralResponse> UpdateEvent(int id, [FromBody] EventAdminUpdateDTO eventDto)
         {
@@ -223,8 +218,8 @@ namespace EzTickets.Controllers
             }
         }
 
-        // DELETE: api/event/5
-        //[Authorize(Roles = "Admin")]
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public ActionResult<GeneralResponse> DeleteEvent(int id)
         {
@@ -246,34 +241,29 @@ namespace EzTickets.Controllers
             }
         }
 
-        //// DELETE: api/event/5
-        ////[Authorize(Roles = "Admin")]
-        //[HttpDelete("{id}")]
-        //public ActionResult<GeneralResponse> SoftDeleteEvent(int id)
-        //{
-        //    try
-        //    {
-        //        _eventRepository.SoftDeleteEvent(id);
-        //        _eventRepository.Save();
-        //        return new GeneralResponse
-        //        {
-        //            IsPass = true,
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return new GeneralResponse
-        //        {
-        //            IsPass = false,
-        //        };
-        //    }
-        //}
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public ActionResult<GeneralResponse> SoftDeleteEvent(int id)
+        {
+            try
+            {
+                _eventRepository.SoftDeleteEvent(id);
+                _eventRepository.Save();
+                return new GeneralResponse
+                {
+                    IsPass = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse
+                {
+                    IsPass = false,
+                };
+            }
+        }
 
-        #endregion
-
-        #region Utility Endpoints
-
-        // GET: api/event/count
+        [Authorize(Roles = "Admin")]
         [HttpGet("count")]
         public ActionResult<GeneralResponse> GetEventsCount()
         {
@@ -294,8 +284,6 @@ namespace EzTickets.Controllers
                 };
             }
         }
-
         #endregion
-
     }
 }

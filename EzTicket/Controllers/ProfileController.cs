@@ -1,4 +1,5 @@
 ﻿using EzTickets.DTO.Public;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ namespace EzTickets.Controllers
             _userManager = userManager;
         }
 
+        [Authorize]
         [HttpGet("my-profile")]
         public async Task<ActionResult<GeneralResponse>> MyProfile()
         {
@@ -39,6 +41,7 @@ namespace EzTickets.Controllers
             return Unauthorized();
         }
 
+        [Authorize]
         [HttpPatch("my-profile")]
         public async Task<ActionResult<GeneralResponse>> UpdateProfile(UpdateProfileDTO request)
         {
@@ -84,6 +87,8 @@ namespace EzTickets.Controllers
 
             return Unauthorized();
         }
+
+        [Authorize]
         [HttpPost("my-profile/change-password")]
         public async Task<ActionResult<GeneralResponse>> ChangePassword(ChangePasswordDTO request)
         {
