@@ -10,7 +10,7 @@
         public string? PaymentMethod { get; set; }
         public DateTime CreatedAt { get; set; }
         public int TicketCount { get; set; }
-
+        public int NumberOfTickets { get; set; }
         public List<int>? TicketIds { get; set; }
 
     }

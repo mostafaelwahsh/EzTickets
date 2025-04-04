@@ -115,7 +115,8 @@ namespace EzTickets.Controllers
                 OrderStatus = OrderStatus.Pending,                
                 TotalAmount = totalAmount,
                 DiscountAmount = discountAmount,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                NumberOfTickets = ticketCount,
             };
 
             _orderRepository.Insert(order);

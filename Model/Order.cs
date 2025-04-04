@@ -26,6 +26,7 @@ namespace Models
         public string UserID { get; set; } = string.Empty;    
         public ApplicationUser? User { get; set; }             
         public decimal TotalAmount { get; set; }
+        public int NumberOfTickets { get; set; }
         public decimal? DiscountAmount { get; set; }
         public OrderStatus OrderStatus { get; set; } 
         public PaymentMethod? PaymentMethod { get; set; }
