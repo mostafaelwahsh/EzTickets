@@ -1,6 +1,8 @@
 ﻿using Models;
+using EzTickets.DTO.Public;
 
-public class UpdateOrderDTO
+
+public class UpdateOrderDto
 {
     public decimal? TotalAmount { get; set; }
     public decimal? DiscountAmount { get; set; }

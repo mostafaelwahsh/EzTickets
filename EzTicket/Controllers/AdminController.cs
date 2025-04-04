@@ -28,6 +28,8 @@ namespace EzTickets.Controllers
             _mapper = mapper;
             _roleManager = roleManager;
             _userRepository = userRepository;
+            _infoRepository = infoRepository;
+
         }
 
         [HttpGet("contact")]
@@ -41,8 +43,9 @@ namespace EzTickets.Controllers
             });
         }
 
-        // To Do
+        [HttpGet("statistics")] // ✅ Add this line
         public async Task<ActionResult<GeneralResponse>> GetStatistics()
+
         {
             // var statistics = _eventRepository.Get---
             return (new GeneralResponse
