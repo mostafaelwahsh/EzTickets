@@ -65,7 +65,7 @@ namespace EzTickets.Repository
             if (order != null)
             {
                 order.IsDeleted = true;
-                _context.SaveChanges();
+                Update(order);
             }
         }
 

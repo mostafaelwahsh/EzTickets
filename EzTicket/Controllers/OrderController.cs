@@ -4,6 +4,7 @@ using EzTickets.DTO.Public;
 using EzTickets.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Models;
 
 namespace EzTickets.Controllers
@@ -90,7 +91,7 @@ namespace EzTickets.Controllers
         #region POST
 
         [HttpPost]
-        public ActionResult<GeneralResponse> CreateOrder(int eventId, int ticketCount, string userId,decimal discount=0)
+        public ActionResult<GeneralResponse> CreateOrder(int eventId, int ticketCount, string userId, decimal discount = 0)
         {
             // Get available tickets
             var availableTickets = _ticketRepository.GetTicketsByEventId(eventId);
@@ -112,7 +113,7 @@ namespace EzTickets.Controllers
             var order = new Order
             {
                 UserID = userId,
-                OrderStatus = OrderStatus.Pending,                
+                OrderStatus = OrderStatus.Pending,
                 TotalAmount = totalAmount,
                 DiscountAmount = discountAmount,
                 CreatedAt = DateTime.UtcNow,
@@ -122,8 +123,8 @@ namespace EzTickets.Controllers
             _orderRepository.Insert(order);
             _orderRepository.Save();
 
-            Order orderdone =_orderRepository.LastOrder();
-            
+            Order orderdone = _orderRepository.LastOrder();
+
             // Update tickets
             foreach (var ticket in availableTickets)
             {
@@ -170,21 +171,46 @@ namespace EzTickets.Controllers
         //    return Ok(ApiResponse<OrderDTO>.Ok(resultDto, "Order updated"));
         //}
 
-#endregion
+        #endregion
 
         #region DELETE
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public ActionResult<GeneralResponse> Delete(int id)
         {
             var existing = _orderRepository.GetById(id);
             if (existing == null)
-                return NotFound(ApiResponse<string>.Fail("Order not found"));
+            {
+                return new GeneralResponse
+                {
+                    IsPass = false,
+                    Data = "Order Not Found"
+                };
+            }
+
+            var ticketsinorder = _ticketRepository.GetAllTicketsByOrderID(id);
+            foreach(Ticket ticket in ticketsinorder)
+            {
+                ticket.TicketStatus = TicketStatus.Available;
+            }
+            _ticketRepository.UpdateRangeofTickets(ticketsinorder);
+            _ticketRepository.Save();
+
+            // Update event
+            var _event = _eventRepository.GetById(ticketsinorder[0].EventID);
+            _event.AvailableTickets += ticketsinorder.Count;
+
+            _eventRepository.Update(_event);
+            _eventRepository.Save();
 
             _orderRepository.Delete(id);
             _orderRepository.Save();
 
-            return Ok(ApiResponse<string>.Ok(existing.OrderId.ToString(), "Order deleted"));
+            return new GeneralResponse
+            {
+                IsPass = true,
+                Data = "Order Is Deleted Successfully"
+            };
         }
 
         #endregion
