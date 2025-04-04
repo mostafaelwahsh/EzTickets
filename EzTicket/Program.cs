@@ -46,7 +46,7 @@ namespace EzTicket
                     policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin()
                 ));
 
-            // ? JWT Authentication Configuration (Safe Key Access)
+     
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -126,7 +126,7 @@ namespace EzTicket
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage(); // ? Add this
+                app.UseDeveloperExceptionPage(); 
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
@@ -135,7 +135,7 @@ namespace EzTicket
             app.UseStaticFiles();
             app.UseCors("EzPolicy");
 
-            app.UseAuthentication(); // ? Add this before UseAuthorization
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
             app.MapControllers();

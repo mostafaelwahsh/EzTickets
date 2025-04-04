@@ -144,7 +144,7 @@ namespace EzTickets.Controllers
             var respone = new GeneralResponse
             {
                 IsPass = true,
-                Data = _mapper.Map<CreateOrderResponseDTO>(order)
+                Data = "Order Successfully Created"
             };
 
             return respone;
