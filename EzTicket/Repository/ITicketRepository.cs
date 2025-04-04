@@ -20,6 +20,7 @@ namespace EzTickets.Repository
         List<Ticket> GetTicketsByUserId(string userId);
         List<Ticket> GetTicketsByStatus(TicketStatus status);
         List<Ticket> GetTicketsByType(TicketType type);
+        List<Ticket> GetAllTicketsByOrderID(int orderId);
 
         // Specialized update methods
         bool UpdateTicketStatus(string ticketId, TicketStatus status);

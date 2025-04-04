@@ -157,6 +157,12 @@ namespace EzTickets.Repository
                            !t.IsDeleted)
                 .Sum(t => t.Price);
         }
+        public List<Ticket> GetAllTicketsByOrderID(int orderId)
+        {
+            return _context.Ticket
+                .Where(t => t.OrderID == orderId && !t.IsDeleted)
+                .ToList();
+        }
 
         // Generate QR code for ticket
         public string GenerateQRCode(string ticketId)
