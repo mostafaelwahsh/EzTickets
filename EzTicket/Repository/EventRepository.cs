@@ -1,7 +1,7 @@
 ﻿using Data;
+using EzTickets.DTO.Pagination;
 using Microsoft.EntityFrameworkCore;
 using Models;
-using System.Diagnostics.Metrics;
 
 namespace EzTickets.Repository
 {
@@ -25,31 +25,46 @@ namespace EzTickets.Repository
             {
                 _context.Event.Remove(DeletedEvent);
             }
-
         }
 
-        public List<Event> GetAll()
+        public PagedResponse<Event> GetAll(PaginationParams pagination)
         {
-            var events = _context.Event
+            var query = _context.Event
                 .Where(e => !e.IsDeleted)
+                .OrderBy(e => e.StartDate); 
+
+            var pagedData = query
+                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
                 .ToList();
-            if (events == null)
-            {
-                throw new Exception("No events found");
-            }
-            return events;
+
+            var totalRecords = query.Count();
+
+            return new PagedResponse<Event>(
+                pagedData,
+                pagination.PageNumber,
+                pagination.PageSize,
+                totalRecords);
         }
 
-        public List<Event> GetAllPublic()
+        public PagedResponse<Event> GetAllPublic(PaginationParams pagination)
         {
-            var events = _context.Event
+            var query = _context.Event
                 .Where(e => e.Status == EventStatus.Published)
+                .OrderBy(e => e.StartDate); 
+
+            var pagedData = query
+                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
                 .ToList();
-            if (events == null)
-            {
-                throw new Exception("No events found");
-            }
-            return events;
+
+            var totalRecords = query.Count();
+
+            return new PagedResponse<Event>(
+                pagedData,
+                pagination.PageNumber,
+                pagination.PageSize,
+                totalRecords);
         }
 
         public Event GetById(int Id)
@@ -158,7 +173,7 @@ namespace EzTickets.Repository
                 .Where(e => e.Status == status).ToList();
             if (EventsByStatus == null)
             {
-                throw new Exception($"No {status} Events found"); 
+                throw new Exception($"No {status} Events found");
             }
             return EventsByStatus;
         }
@@ -203,7 +218,7 @@ namespace EzTickets.Repository
 
         public void Save()
         {
-           _context.SaveChanges();
+            _context.SaveChanges();
         }
 
         public void SoftDeleteEvent(int eventId)
@@ -224,6 +239,61 @@ namespace EzTickets.Repository
         public void Update(Event obj)
         {
             _context.Entry(obj).State = EntityState.Modified;
+        }
+
+        public PagedResponse<Event> GetFilteredPublicEvents(
+    string? searchQuery = null,
+    EventCategoryType? category = null,
+    string? city = null,
+    string? venue = null,
+    decimal? minPrice = null,
+    decimal? maxPrice = null,
+    DateTime? startDate = null,
+    DateTime? endDate = null,
+    PaginationParams? pagination = null)
+        {
+            // Default pagination if not provided
+            pagination ??= new PaginationParams();
+
+            var query = _context.Event
+                .Where(e => e.Status == EventStatus.Published)
+                .AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(searchQuery))
+                query = query.Where(e => e.EventName.Contains(searchQuery));
+
+            if (category.HasValue)
+                query = query.Where(e => e.Category == category.Value);
+
+            if (!string.IsNullOrEmpty(city))
+                query = query.Where(e => e.City.Contains(city));
+
+            if (!string.IsNullOrEmpty(venue))
+                query = query.Where(e => e.VenueName.Contains(venue));
+
+            if (minPrice.HasValue || maxPrice.HasValue)
+                query = query.Where(e => e.PricePerTicket >= (minPrice ?? 0) &&
+                                        e.PricePerTicket <= (maxPrice ?? decimal.MaxValue));
+
+            if (startDate.HasValue && endDate.HasValue)
+                query = query.Where(e => e.StartDate >= startDate && e.EndDate <= endDate);
+            else if (startDate.HasValue)
+                query = query.Where(e => e.StartDate.Date == startDate.Value.Date);
+
+            var totalRecords = query.Count();
+
+            var pagedData = query
+                .OrderBy(e => e.StartDate)
+                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
+                .ToList();
+
+            return new PagedResponse<Event>(
+                pagedData,
+                pagination.PageNumber,
+                pagination.PageSize,
+                totalRecords);
         }
 
     }
