@@ -242,7 +242,7 @@ namespace EzTickets.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("soft/{id}")]
         public ActionResult<GeneralResponse> SoftDeleteEvent(int id)
         {
             try

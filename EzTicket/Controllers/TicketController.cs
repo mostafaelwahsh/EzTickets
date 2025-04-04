@@ -28,44 +28,19 @@ namespace EzTickets.Controllers
             _orderRepository = orderRepository;
         }
 
-        [Authorize(Roles ="Admin")]
-        [HttpGet]
-        public ActionResult<GeneralResponse> GetAllTickets([FromQuery] PaginationParams pagination)
-        {
-            try
-            {
-                var tickets = _ticketRepository.GetAll(pagination);
-                var ticketDTOs = _mapper.Map<List<TicketResponseDTO>>(tickets);
-                var response = new GeneralResponse
-                {
-                    IsPass = true,
-                    Data = ticketDTOs
-                };
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                var response = new GeneralResponse
-                {
-                    IsPass = false,
-                    Data = null
-                };
-                return response;
-            }
-        }
-
         [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public ActionResult<GeneralResponse> GetTicket(string id)
         {
             var ticket = _ticketRepository.GetById(id);
+            var dto = _mapper.Map<TicketResponseDTO>(ticket);
 
             if (ticket == null)
             {
                 GeneralResponse response = new GeneralResponse
                 {
                     IsPass = false,
-                    Data = null
+                    Data = "Ticket Not Found"
                 };
                 return (response);
             }
@@ -73,7 +48,7 @@ namespace EzTickets.Controllers
             GeneralResponse responseData = new GeneralResponse
             {
                 IsPass = true,
-                Data = _mapper.Map<TicketResponseDTO>(ticket)
+                Data = dto
             };
 
             return responseData;
