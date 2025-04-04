@@ -14,13 +14,24 @@ namespace EzTickets.Repository
             _context = context;
         }
 
-        public List<Order> GetAll()
+        public PagedResponse<Order> GetAll(PaginationParams pagination)
         {
-            return _context.Order
-                .AsNoTracking()
-                .Where(o => o.IsDeleted == false)
-                .Include(o => o.Tickets)
+            var query = _context.Order
+                .Where(e => !e.IsDeleted)
+                .OrderBy(e => e.OrderId);
+
+            var pagedData = query
+                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
                 .ToList();
+
+            var totalRecords = query.Count();
+
+            return new PagedResponse<Order>(
+                pagedData,
+                pagination.PageNumber,
+                pagination.PageSize,
+                totalRecords);
         }
 
         public Order? GetById(int id)
@@ -96,9 +107,5 @@ namespace EzTickets.Repository
             _context.SaveChanges();
         }
 
-        public PagedResponse<Order> GetAll(PaginationParams pagination)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
