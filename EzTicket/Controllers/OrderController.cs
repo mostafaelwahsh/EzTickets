@@ -203,7 +203,8 @@ namespace EzTickets.Controllers
             _eventRepository.Update(_event);
             _eventRepository.Save();
 
-            _orderRepository.Delete(id);
+            _orderRepository.IsDeletedTrue(id);
+            _orderRepository.Update(existing);
             _orderRepository.Save();
 
             return new GeneralResponse

@@ -9,6 +9,7 @@ namespace EzTickets.Repository
 
         List<Order> GetByUserId(string userId);
 
+        void IsDeletedTrue(int id);
 
         List<Order> GetExpiringOrders(DateTime targetDate);
 
