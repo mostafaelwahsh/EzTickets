@@ -19,7 +19,7 @@ namespace EzTickets.Controllers
         private readonly IMapper _mapper;
 
         public OrderController(IOrderRepository orderRepository, ITicketRepository ticketRepository,
-            IEventRepository eventRepository, IMapper mapper)
+                                                             IEventRepository eventRepository, IMapper mapper)
         {
             _orderRepository = orderRepository;
             _ticketRepository = ticketRepository;
