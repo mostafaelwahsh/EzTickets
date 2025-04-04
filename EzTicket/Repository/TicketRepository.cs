@@ -5,6 +5,7 @@ using EzTickets.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EzTickets.DTO.Pagination;
 
 namespace EzTickets.Repository
 {
@@ -17,12 +18,15 @@ namespace EzTickets.Repository
             _context = context;
         }
 
-        public List<Ticket> GetAll()
+        public List<Ticket> GetAll(PaginationParams pagination)
         {
             return _context.Ticket
                 .Where(t => !t.IsDeleted)
+                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
                 .Include(t => t.Event)
                 .Include(t => t.User)
+                .Include(t => t.Order)
                 .ToList();
         }
 
@@ -32,6 +36,7 @@ namespace EzTickets.Repository
             return _context.Ticket
                 .Include(t => t.Event) 
                 .Include(t => t.User)   
+                .Include(t=>t.Order)
                 .FirstOrDefault(t => t.TicketID == id);
         }
 
@@ -45,6 +50,7 @@ namespace EzTickets.Repository
                 ticket.CreatedAt = DateTime.UtcNow;
 
             _context.Ticket.Add(ticket);
+            
         }
 
         public void Update(Ticket ticket)
@@ -74,6 +80,7 @@ namespace EzTickets.Repository
                 .Where(t => t.EventID == eventId && !t.IsDeleted)
                 .Include(t => t.Event)
                 .Include(t => t.User)
+                .Include(t => t.Order)
                 .ToList();
         }
 
@@ -83,6 +90,7 @@ namespace EzTickets.Repository
                 .Where(t => t.UserID == userId && !t.IsDeleted)
                 .Include(t => t.Event)
                 .Include(t => t.User)
+                .Include(t => t.Order)
                 .ToList();
         }
 
@@ -92,6 +100,7 @@ namespace EzTickets.Repository
                 .Where(t => t.TicketStatus == status && !t.IsDeleted)
                 .Include(t => t.Event)
                 .Include(t => t.User)
+                .Include(t => t.Order)
                 .ToList();
         }
 
@@ -101,6 +110,7 @@ namespace EzTickets.Repository
                 .Where(t => t.TicketType == type && !t.IsDeleted)
                 .Include(t => t.Event)
                 .Include(t => t.User)
+                 .Include(t => t.Order)
                 .ToList();
         }
 

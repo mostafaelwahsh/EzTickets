@@ -95,5 +95,10 @@ namespace EzTickets.Repository
         {
             _context.SaveChanges();
         }
+
+        public PagedResponse<Order> GetAll(PaginationParams pagination)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

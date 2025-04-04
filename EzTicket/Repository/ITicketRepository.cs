@@ -1,12 +1,13 @@
 ﻿using Models;
 using EzTickets.DTO;
+using EzTickets.DTO.Pagination;
 
 namespace EzTickets.Repository
 {
     public interface ITicketRepository 
     {
         // Get by string ID (matching your model)
-        List<Ticket> GetAll();
+        List<Ticket> GetAll(PaginationParams pagination);
         void Insert(Ticket obj);
         void Save();
         void Update (Ticket obj);
