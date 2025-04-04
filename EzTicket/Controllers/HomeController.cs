@@ -19,6 +19,7 @@ namespace EzTickets.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
         public ActionResult<GeneralResponse> GetAllEventsPublic([FromQuery] PaginationParams pagination)
         {
             try
