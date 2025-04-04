@@ -2,6 +2,7 @@
 using EzTickets.DTO.Pagination;
 using EzTickets.DTO.Public;
 using EzTickets.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -90,6 +91,7 @@ namespace EzTickets.Controllers
 
         #region POST
 
+        [Authorize]
         [HttpPost]
         public ActionResult<GeneralResponse> CreateOrder(int eventId, int ticketCount, string userId, decimal discount = 0)
         {
@@ -175,6 +177,7 @@ namespace EzTickets.Controllers
 
         #region DELETE
 
+        [Authorize]
         [HttpDelete("{id}")]
         public ActionResult<GeneralResponse> Delete(int id)
         {
