@@ -11,7 +11,6 @@ namespace Data
 
         public DbSet<Event> Event { get; set; }
         public DbSet<Order> Order { get; set; }
-        public DbSet<Payment> Payment { get; set; }
         public DbSet<Ticket> Ticket { get; set; }
         public DbSet<ContactRequest> ContactRequests { get; set; }
 
