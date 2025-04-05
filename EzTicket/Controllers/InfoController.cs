@@ -1,4 +1,5 @@
-﻿using EzTickets.DTO.Public;
+﻿using EzTickets.DTO.Admin;
+using EzTickets.DTO.Public;
 using EzTickets.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,8 +50,7 @@ namespace EzTickets.Controllers
 
 
         [HttpPost("contact")]
-        public async Task<ActionResult<GeneralResponse>> SubmitContactRequest(
-            [FromBody] ContactRequestDTO request)
+        public async Task<ActionResult<GeneralResponse>> SubmitContactRequest(ContactRequestDTO request)
         {
             if (!ModelState.IsValid)
             {
@@ -70,7 +70,7 @@ namespace EzTickets.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpGet("faq")]
         public ActionResult<GeneralResponse> GetFAQ()
         {
             var faqs = new List<FAQItemDTO>()

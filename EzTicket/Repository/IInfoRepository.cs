@@ -1,4 +1,4 @@
-﻿using EzTickets.DTO.Public;
+﻿using EzTickets.DTO.Admin;
 using Models;
 
 namespace EzTickets.Repository
