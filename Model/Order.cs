@@ -23,7 +23,7 @@ namespace Models
         public int OrderId { get; set; } 
 
         [ForeignKey("User")]
-        public string UserID { get; set; } = string.Empty;    
+        public string UserID { get; set; }
         public ApplicationUser? User { get; set; }             
         public decimal TotalAmount { get; set; }
         public int NumberOfTickets { get; set; }

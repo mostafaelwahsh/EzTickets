@@ -6,17 +6,11 @@ namespace EzTickets.Repository
 {
     public interface IOrderRepository : IRepository<Order>
     {
-
         List<Order> GetByUserId(string userId);
 
         void IsDeletedTrue(int id);
 
-        List<Order> GetExpiringOrders(DateTime targetDate);
-
         Order LastOrder();
-
-        PagedResponse<Order> GetPagedOrders(PaginationParams paginationParams);
-
 
     }
 }
