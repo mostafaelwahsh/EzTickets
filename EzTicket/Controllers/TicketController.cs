@@ -45,13 +45,11 @@ namespace EzTickets.Controllers
                 return (response);
             }
 
-            GeneralResponse responseData = new GeneralResponse
+            return (new GeneralResponse
             {
                 IsPass = true,
                 Data = dto
-            };
-
-            return responseData;
+            });
         }
 
         [Authorize(Roles = "Admin")]
