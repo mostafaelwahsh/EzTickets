@@ -19,17 +19,18 @@ namespace EzTickets.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserRepository _userRepository;
         private readonly IInfoRepository _infoRepository;
+        private readonly IEventRepository _eventRepository;
 
         public AdminController(UserManager<ApplicationUser> userManager, IMapper mapper,
                                RoleManager<IdentityRole> roleManager, IUserRepository userRepository,
-                               IInfoRepository infoRepository)
+                               IInfoRepository infoRepository, IEventRepository eventRepository)
         {
             _userManager = userManager;
             _mapper = mapper;
             _roleManager = roleManager;
             _userRepository = userRepository;
             _infoRepository = infoRepository;
-
+            _eventRepository = eventRepository;
         }
 
         [HttpGet("contact-requests")]
@@ -45,15 +46,30 @@ namespace EzTickets.Controllers
         }
 
         [HttpGet("statistics")]
-        public async Task<ActionResult<GeneralResponse>> GetStatistics()
-
+        public ActionResult<GeneralResponse> GetStatistics([FromQuery] PaginationParams pagination)
         {
-            // var statistics = _eventRepository.Get---
-            return (new GeneralResponse
+            try
             {
-                IsPass = true,
-                Data = "------------"
-            });
+                var pagedEvents = _eventRepository.GetAllPublic(pagination);
+                var result = new PagedResponse<SalesReportDTO>(
+                    _mapper.Map<List<SalesReportDTO>>(pagedEvents.Data),
+                    pagedEvents.PageNumber,
+                    pagedEvents.PageSize,
+                    pagedEvents.TotalRecords);
+
+                return new GeneralResponse
+                {
+                    IsPass = true,
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse
+                {
+                    IsPass = false,
+                };
+            }
         }
 
         [HttpGet("users")]

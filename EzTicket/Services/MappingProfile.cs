@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EzTickets.DTO;
 using EzTickets.DTO.Admin;
 using EzTickets.DTO.Public;
 using Models;
@@ -22,7 +21,6 @@ namespace EzTickets.Services
                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Event.City))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.Event.StartDate));
 
-            // Create DTO to Ticket
             CreateMap<TicketCreateDTO, Ticket>()
                 .ForMember(dest => dest.TicketID, opt => opt.MapFrom(_ => Guid.NewGuid().ToString()))
                 .ForMember(dest => dest.TicketStatus, opt => opt.MapFrom(src =>
@@ -32,7 +30,6 @@ namespace EzTickets.Services
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false));
 
-            // Update DTO to Ticket
             CreateMap<TicketUpdateDTO, Ticket>()
                 .ForMember(dest => dest.TicketID, opt => opt.Ignore())
                 .ForMember(dest => dest.EventID, opt => opt.Ignore())
@@ -41,7 +38,6 @@ namespace EzTickets.Services
                 .ForMember(dest => dest.TicketType, opt => opt.Ignore())
                 .ForMember(dest => dest.Price, opt => opt.Ignore())
                 .ForMember(dest => dest.ExpirationDate, opt => opt.Ignore())
-                //.ForMember(dest => dest.SeatNumber, opt => opt.Ignore())
                 .ForMember(dest => dest.QRCode, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
             #endregion
@@ -56,7 +52,6 @@ namespace EzTickets.Services
 
             #region Event
 
-            // Admin Mappings (unchanged)
             CreateMap<Event, EventAdminResponseDTO>();
             CreateMap<EventAdminCreateDTO, Event>()
                 .ForMember(dest => dest.EventID, opt => opt.Ignore())
@@ -82,6 +77,7 @@ namespace EzTickets.Services
             CreateMap<ApplicationUser, RoleUpdateDTO>();
             CreateMap<ApplicationUser, AdminUserDTO>();
             CreateMap<ContactRequest, ContactRequestDTO>();
+            CreateMap<Event, SalesReportDTO>();
             #endregion
 
         }

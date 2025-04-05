@@ -327,6 +327,25 @@ namespace EzTickets.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<PagedResponse<Event>> GetSalesReportData(PaginationParams pagination)
+        {
+            var query = _context.Event
+                .Include(e => e.Tickets) 
+                .AsQueryable();
 
+            var pagedData = await query
+                .OrderBy(e => e.StartDate)
+                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
+                .ToListAsync();
+
+            var totalRecords = await query.CountAsync();
+
+            return new PagedResponse<Event>(
+                pagedData,
+                pagination.PageNumber,
+                pagination.PageSize,
+                totalRecords);
+        }
     }
 }
