@@ -37,7 +37,7 @@ namespace EzTickets.Repository
         public Order? GetById(int id)
         {
             return _context.Order
-                             .FirstOrDefault(o => o.OrderId == id && o.IsDeleted == false);
+                             .FirstOrDefault(o => o.OrderId == id);
         }
 
         public Order LastOrder()
@@ -79,16 +79,6 @@ namespace EzTickets.Repository
             return _context.Order
                 .AsNoTracking()
                 .Where(o => o.UserID == userId && o.IsDeleted == false)
-                .Include(o => o.Tickets)
-                .ToList();
-        }
-
-        public List<Order> GetExpiringOrders(DateTime targetDate)
-        {
-            return _context.Order
-                .AsNoTracking()
-                .Where(o => o.ExpirationDate.HasValue && o.ExpirationDate.Value <= targetDate)
-                .Include(o => o.Tickets)
                 .ToList();
         }
 

@@ -4,8 +4,6 @@ using EzTickets.DTO.Public;
 
 public class UpdateOrderDTO
 {
-    public decimal? TotalAmount { get; set; }
-    public decimal? DiscountAmount { get; set; }
     public OrderStatus? OrderStatus { get; set; }
     public PaymentMethod? PaymentMethod { get; set; }
     public DateTime? ExpirationDate { get; set; }

@@ -48,15 +48,7 @@ namespace EzTickets.Services
 
             #region order
 
-            CreateMap<Order, CreateOrderResponseDTO>()
-            .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
-            .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.PaymentMethod.HasValue ? src.PaymentMethod.ToString() : null))
-            .ForMember(dest => dest.TicketCount, opt => opt.MapFrom(src => src.Tickets.Count))
-            .ForMember(dest => dest.TicketIds, opt => opt.MapFrom(src => src.Tickets.Select(t => t.TicketID)));
-
-
-            CreateMap<Order, OrderDTO>()
-                    .ForMember(dest => dest.Tickets, opt => opt.MapFrom(src => src.Tickets));
+            CreateMap<Order, OrderDTO>();
 
             CreateMap<CreateOrderDto, Order>()
                 .ForMember(dest => dest.OrderId, opt => opt.Ignore())
@@ -64,8 +56,7 @@ namespace EzTickets.Services
                 .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false))
                 .ForMember(dest => dest.Tickets, opt => opt.Ignore()); // ignore TicketIds → Tickets
 
-            CreateMap<UpdateOrderDTO, Order>()
-                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateOrderDTO, Order>();
 
             #endregion
 
