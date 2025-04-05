@@ -5,10 +5,6 @@ using EzTickets.Repository;
 using AutoMapper;
 using EzTickets.DTO.Public;
 using System.Security.Claims;
-using Data;
-using EzTickets.DTO.Pagination;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 
 namespace EzTickets.Controllers
 {
@@ -54,14 +50,12 @@ namespace EzTickets.Controllers
             });
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("event/{eventId}")]
         public ActionResult<GeneralResponse> GetTicketsByEvent(int eventId, TicketStatus? ticketStatus = null)
         {
-            // Get tickets filtered directly from the database
             var tickets = _ticketRepository.GetTicketsByEventIdAndStatus(eventId);
 
-            // Map to DTOs
             var ticketDTOs = _mapper.Map<List<TicketResponseDTO>>(tickets);
 
             GeneralResponse response = new GeneralResponse

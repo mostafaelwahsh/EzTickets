@@ -16,13 +16,12 @@ namespace EzTickets.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AccountController(UserManager<ApplicationUser> userManager, IConfiguration config, RoleManager<IdentityRole> roleManager)
+        public AccountController(UserManager<ApplicationUser> userManager, IConfiguration config,
+               RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _config = config;
-            _roleManager = roleManager;
         }
 
         [HttpPost("register")]
@@ -133,6 +132,54 @@ namespace EzTickets.Controllers
             });
         }
 
-        //To Do: Forget Password - Reset Password
+        [HttpPost("forgot-password")]
+        public async Task<ActionResult<GeneralResponse>> ForgotPassword(ForgotPasswordDTO model)
+        {
+            if (!ModelState.IsValid)
+                return new GeneralResponse { IsPass = false, Data = ModelState };
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return new GeneralResponse { IsPass = true, Data = "If your email exists, you'll receive a password reset link" };
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            
+            // we are returning it directly (only for development)
+            var resetLink = Url.Action("ResetPassword", "Account",
+                new { email = model.Email, token = token }, Request.Scheme);
+
+            return new GeneralResponse
+            {
+                IsPass = true,
+                Data = new
+                {
+                    Message = "Password reset link generated",
+                    ResetLink = resetLink 
+                }
+            };
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<ActionResult<GeneralResponse>> ResetPassword(ResetPasswordDTO fromRequest)
+        {
+            if (!ModelState.IsValid)
+                return new GeneralResponse { IsPass = false, Data = ModelState };
+
+            var user = await _userManager.FindByEmailAsync(fromRequest.Email);
+            if (user == null)
+                return new GeneralResponse { IsPass = true, Data = "Password reset successful" };
+
+            var result = await _userManager.ResetPasswordAsync(user, fromRequest.Token, fromRequest.NewPassword);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return new GeneralResponse { IsPass = false, Data = ModelState };
+            }
+
+            return new GeneralResponse { IsPass = true, Data = "Password has been reset successfully" };
+        }
     }
 }

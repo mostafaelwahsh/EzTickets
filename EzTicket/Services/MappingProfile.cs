@@ -95,7 +95,7 @@ namespace EzTickets.Services
             CreateMap<ApplicationUser, AdminUserDetailsDTO>();
             CreateMap<ApplicationUser, RoleUpdateDTO>();
             CreateMap<ApplicationUser, AdminUserDTO>();
-
+            CreateMap<ContactRequest, ContactRequestDTO>();
             #endregion
 
         }
