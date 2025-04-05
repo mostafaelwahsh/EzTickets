@@ -7,6 +7,8 @@ using EzTickets.DTO.Public;
 using System.Security.Claims;
 using Data;
 using EzTickets.DTO.Pagination;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace EzTickets.Controllers
 {
@@ -42,7 +44,7 @@ namespace EzTickets.Controllers
                     IsPass = false,
                     Data = "Ticket Not Found"
                 };
-                return (response);
+             
             }
 
             return (new GeneralResponse
@@ -52,17 +54,14 @@ namespace EzTickets.Controllers
             });
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet("event/{eventId}")]
-        public ActionResult<GeneralResponse> GetTicketsByEvent(int eventId, TicketStatus ticketStatus)
+        public ActionResult<GeneralResponse> GetTicketsByEvent(int eventId, TicketStatus? ticketStatus = null)
         {
-            var tickets = _ticketRepository.GetTicketsByEventId(eventId);
+            // Get tickets filtered directly from the database
+            var tickets = _ticketRepository.GetTicketsByEventIdAndStatus(eventId);
 
-            if (ticketStatus == TicketStatus.Available)
-            {
-                tickets = tickets.Where(t => t.TicketStatus == TicketStatus.Available).ToList();
-            }
-
+            // Map to DTOs
             var ticketDTOs = _mapper.Map<List<TicketResponseDTO>>(tickets);
 
             GeneralResponse response = new GeneralResponse
@@ -117,32 +116,50 @@ namespace EzTickets.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public ActionResult<GeneralResponse> UpdateTicket(string id, TicketUpdateDTO ticketDTO)
         {
             var ticket = _ticketRepository.GetById(id);
             if (ticket == null)
             {
-                var generalresponse = new GeneralResponse
+                var generalResponse = new GeneralResponse
                 {
                     IsPass = false,
                     Data = null
                 };
-                return generalresponse;
+                return NotFound(generalResponse);
             }
 
+
+            string originalUserId = ticket.UserID;
+
             _mapper.Map(ticketDTO, ticket);
+
+           
+            if (string.IsNullOrEmpty(ticketDTO.UserID))
+            {
+                ticket.UserID = originalUserId;
+            }
+
             _ticketRepository.Update(ticket);
             _ticketRepository.Save();
+
+            var responseDTO = _mapper.Map<TicketResponseDTO>(ticket);
+
+            if (ticket.User != null)
+            {
+                responseDTO.UserFullName = ticket.User.FullName;
+            }
 
             var response = new GeneralResponse
             {
                 IsPass = true,
-                Data = ticket
+                Data = responseDTO
             };
 
-            return response;
+            return Ok(response);
         }
+
 
     }
 }

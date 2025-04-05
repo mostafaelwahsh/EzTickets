@@ -37,9 +37,7 @@ namespace EzTickets.Repository
         public Order? GetById(int id)
         {
             return _context.Order
-                .AsNoTracking()
-                .Include(o => o.Tickets)
-                .FirstOrDefault(o => o.OrderId == id && o.IsDeleted == false);
+                             .FirstOrDefault(o => o.OrderId == id && o.IsDeleted == false);
         }
 
         public Order LastOrder()
@@ -65,7 +63,14 @@ namespace EzTickets.Repository
             if (order != null)
             {
                 order.IsDeleted = true;
-                Update(order);
+            }
+        }
+        public void IsDeletedTrue(int id)
+        {
+            var order = GetById(id);
+            if (order != null)
+            {
+                order.IsDeleted = true;
             }
         }
 

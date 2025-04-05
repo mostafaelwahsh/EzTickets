@@ -32,6 +32,7 @@ namespace EzTickets.Repository
 
         // Generate QR code for ticket
         string GenerateQRCode(string ticketId);
+        List<Ticket> GetTicketsByEventIdAndStatus(int eventId, TicketStatus? ticketStatus = null);
 
     }
 }
