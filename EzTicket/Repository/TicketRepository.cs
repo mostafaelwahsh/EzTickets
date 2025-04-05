@@ -78,11 +78,31 @@ namespace EzTickets.Repository
         }
 
         // Additional query methods
-        public List<Ticket> GetTicketsByEventId(int eventId)
-        {
+            public List<Ticket> GetTicketsByEventId(int eventId)
+            {
+          
             return _context.Ticket
-                .Where(t => t.EventID == eventId && !t.IsDeleted && t.TicketStatus==TicketStatus.Available).ToList();
-                
+             .Where(t => t.EventID == eventId && !t.IsDeleted)
+             .Include(t => t.Event)  
+             .Include(t=>t.User)
+             .ToList();
+
+            }
+        public List<Ticket> GetTicketsByEventIdAndStatus(int eventId, TicketStatus? status = null)
+        {
+            var query = _context.Ticket
+                .Where(t => t.EventID == eventId && !t.IsDeleted);
+
+           
+            if (status.HasValue)
+            {
+                query = query.Where(t => t.TicketStatus == status.Value);
+            }
+
+            return query
+                .Include(t => t.Event)
+                .Include(t => t.User)
+                .ToList();
         }
 
         public List<Ticket> GetTicketsByUserId(string userId)
