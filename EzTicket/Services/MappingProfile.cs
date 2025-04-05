@@ -50,12 +50,6 @@ namespace EzTickets.Services
 
             CreateMap<Order, OrderDTO>();
 
-            CreateMap<CreateOrderDto, Order>()
-                .ForMember(dest => dest.OrderId, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
-                .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false))
-                .ForMember(dest => dest.Tickets, opt => opt.Ignore()); // ignore TicketIds → Tickets
-
             CreateMap<UpdateOrderDTO, Order>();
 
             #endregion
