@@ -81,9 +81,10 @@ namespace EzTickets.Services
                 .ForMember(dest => dest.Tickets, opt => opt.Ignore());
 
             CreateMap<EventAdminUpdateDTO, Event>()
+                .ForMember(dest => dest.EventID, opt => opt.Ignore())
                 .ForMember(dest => dest.AvailableTickets, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+                .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false))
                 .ForMember(dest => dest.Tickets, opt => opt.Ignore());
 
             CreateMap<Event, EventPublicListDTO>();

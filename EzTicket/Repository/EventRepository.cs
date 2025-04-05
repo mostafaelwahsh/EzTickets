@@ -207,6 +207,7 @@ namespace EzTickets.Repository
             if (eventToRestore != null && eventToRestore.IsDeleted == true)
             {
                 eventToRestore.IsDeleted = false;
+                eventToRestore.Status = EventStatus.Draft;
                 _context.Event.Update(eventToRestore);
             }
             else
@@ -226,6 +227,7 @@ namespace EzTickets.Repository
             var eventToDelete = GetById(eventId);
             if (eventToDelete != null)
             {
+                eventToDelete.Status = EventStatus.Canceled;
                 eventToDelete.IsDeleted = true;
                 _context.Event.Update(eventToDelete);
             }

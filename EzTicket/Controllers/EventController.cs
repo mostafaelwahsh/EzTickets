@@ -140,6 +140,29 @@ namespace EzTickets.Controllers
             }
         }
 
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("/Admin/{id}")]
+        public ActionResult<GeneralResponse> AdminGetEventById(int id)
+        {
+            try
+            {
+                var eventItem = _eventRepository.GetById(id);
+                return new GeneralResponse
+                {
+                    IsPass = true,
+                    Data = _mapper.Map<EventAdminResponseDTO>(eventItem)
+                };
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse
+                {
+                    IsPass = false,
+                };
+            }
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult<GeneralResponse> CreateEvent([FromBody] EventAdminCreateDTO eventDto)
@@ -165,8 +188,9 @@ namespace EzTickets.Controllers
             }
         }
 
+
         [Authorize(Roles = "Admin")]
-        [HttpPost("{id}/publish")]
+        [HttpPost("/publish/{id}")]
         public async Task<IActionResult> PublishEvent(int id)
         {
             var success = await _eventRepository.PublishEvent(id);
@@ -181,17 +205,12 @@ namespace EzTickets.Controllers
             });
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
-        public ActionResult<GeneralResponse> UpdateEvent(int id, [FromBody] EventAdminUpdateDTO eventDto)
+        //[Authorize(Roles = "Admin")]
+        [HttpPatch("Edit-Event/{id}")]
+        public ActionResult<GeneralResponse> UpdateEvent(int id, EventAdminUpdateDTO eventDto)
         {
             try
             {
-                if (id != eventDto.EventID)
-                    return new GeneralResponse
-                    {
-                        IsPass = false,
-                    };
 
                 var existingEvent = _eventRepository.GetById(id);
                 if (existingEvent == null)
@@ -248,6 +267,28 @@ namespace EzTickets.Controllers
             try
             {
                 _eventRepository.SoftDeleteEvent(id);
+                _eventRepository.Save();
+                return new GeneralResponse
+                {
+                    IsPass = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse
+                {
+                    IsPass = false,
+                };
+            }
+        }        
+        
+        [Authorize(Roles = "Admin")]
+        [HttpPatch("Restore/{id}")]
+        public ActionResult<GeneralResponse> RestoreEvent(int id)
+        {
+            try
+            {
+                _eventRepository.RestoreEvent(id);
                 _eventRepository.Save();
                 return new GeneralResponse
                 {

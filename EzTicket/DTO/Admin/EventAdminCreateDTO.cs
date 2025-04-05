@@ -28,11 +28,11 @@ namespace EzTickets.DTO.Admin
         public DateTime EndDate { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue)]
+        [Range(1, 250)]
         public int TotalTickets { get; set; }
 
         [Required]
-        [Range(0, double.MaxValue)]
+        [Range(0, 1000)]
         public decimal PricePerTicket { get; set; }
 
         public string? ImageUrl { get; set; }
