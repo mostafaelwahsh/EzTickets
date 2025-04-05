@@ -9,6 +9,5 @@ public class ApplicationUser : IdentityUser
     public string? City { get; set; }
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     public ICollection<Order> Orders { get; set; } = new List<Order>();
-    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
 }

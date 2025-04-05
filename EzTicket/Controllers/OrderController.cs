@@ -4,15 +4,12 @@ using EzTickets.DTO.Public;
 using EzTickets.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Models;
 
 namespace EzTickets.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Produces("application/json")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _orderRepository;
@@ -29,11 +26,8 @@ namespace EzTickets.Controllers
             _mapper = mapper;
         }
 
-        #region GET Methods
-
-        // GET: api/event (for public view)
-        [HttpGet]
-        public ActionResult<GeneralResponse> GetAllEventsPublic([FromQuery] PaginationParams pagination)
+        [HttpGet("all-orders")]
+        public ActionResult<GeneralResponse> GetAllOrderPaginated([FromQuery] PaginationParams pagination)
         {
             try
             {
@@ -59,37 +53,37 @@ namespace EzTickets.Controllers
             }
         }
 
-
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public ActionResult<GeneralResponse> GetById(int id)
         {
             var order = _orderRepository.GetById(id);
             if (order == null)
-                return NotFound(ApiResponse<OrderDTO>.Fail("Order not found"));
-
+            {
+                return new GeneralResponse
+                {
+                    Data = "There is no order with this ID",
+                    IsPass = false
+                };
+            }
             var dto = _mapper.Map<OrderDTO>(order);
-            return Ok(ApiResponse<OrderDTO>.Ok(dto));
+            return new GeneralResponse
+            {
+                Data = dto,
+                IsPass = true,
+            };
         }
 
         [HttpGet("user/{userId}")]
-        public IActionResult GetByUserId(string userId)
+        public ActionResult<GeneralResponse> GetByUserId(string userId)
         {
             var orders = _orderRepository.GetByUserId(userId);
             var result = _mapper.Map<List<OrderDTO>>(orders);
-            return Ok(ApiResponse<List<OrderDTO>>.Ok(result));
+            return new GeneralResponse
+            {
+                Data = result,
+                IsPass = true,
+            };
         }
-
-        [HttpGet("expiring")]
-        public IActionResult GetExpiring([FromQuery] DateTime targetDate)
-        {
-            var orders = _orderRepository.GetExpiringOrders(targetDate);
-            var result = _mapper.Map<List<OrderDTO>>(orders);
-            return Ok(ApiResponse<List<OrderDTO>>.Ok(result));
-        }
-
-        #endregion
-
-        #region POST
 
         [Authorize]
         [HttpPost]
@@ -154,28 +148,32 @@ namespace EzTickets.Controllers
             return respone;
         }
 
-        #endregion
+        [HttpPut("{id}")]
+        public ActionResult<GeneralResponse> Update(int id, [FromBody] UpdateOrderDTO dto)
+        {
+            var existing = _orderRepository.GetById(id);
+            if (existing == null)
+            {
+                return new GeneralResponse
+                {
+                    Data = "There is no order with this ID",
+                    IsPass = false
+                };
+            }
 
-        #region PUT
+            _mapper.Map(dto, existing); 
 
-        //[HttpPut("{id}")]
-        //public IActionResult Update(int id, [FromBody] UpdateOrderDTO dto)
-        //{
-        //    var existing = _orderRepository.GetById(id);
-        //    if (existing == null)
-        //        return NotFound(ApiResponse<OrderDTO>.Fail("Order not found"));
+            _orderRepository.Update(existing);
+            _orderRepository.Save();
 
-        //    _mapper.Map(dto, existing);
-        //    _orderRepository.Update(existing);
-        //    _orderRepository.Save();
+            var resultDto = _mapper.Map<OrderDTO>(existing);
 
-        //    var resultDto = _mapper.Map<OrderDTO>(existing);
-        //    return Ok(ApiResponse<OrderDTO>.Ok(resultDto, "Order updated"));
-        //}
-
-        #endregion
-
-        #region DELETE
+            return new GeneralResponse
+            {
+                Data = resultDto,
+                IsPass = true,
+            };
+        }
 
         [Authorize]
         [HttpDelete("{id}")]
@@ -192,7 +190,7 @@ namespace EzTickets.Controllers
             }
 
             var ticketsinorder = _ticketRepository.GetAllTicketsByOrderID(id);
-            foreach(Ticket ticket in ticketsinorder)
+            foreach (Ticket ticket in ticketsinorder)
             {
                 ticket.TicketStatus = TicketStatus.Available;
             }
@@ -216,7 +214,5 @@ namespace EzTickets.Controllers
                 Data = "Order Is Deleted Successfully"
             };
         }
-
-        #endregion
     }
 }

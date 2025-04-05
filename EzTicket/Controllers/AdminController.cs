@@ -32,10 +32,11 @@ namespace EzTickets.Controllers
 
         }
 
-        [HttpGet("contact")]
-        public ActionResult<GeneralResponse> GetContactRequests()
+        [HttpGet("contact-requests")]
+        public async Task<ActionResult<GeneralResponse>> GetContactRequests()
         {
-            var requests = _infoRepository.GetAllRequests();
+            var requests = await _infoRepository.GetAllRequests();
+            var contactRequests = _mapper.Map<List<ContactRequestDTO>>(requests);
             return (new GeneralResponse
             {
                 IsPass = true,
@@ -43,7 +44,7 @@ namespace EzTickets.Controllers
             });
         }
 
-        [HttpGet("statistics")] // ✅ Add this line
+        [HttpGet("statistics")]
         public async Task<ActionResult<GeneralResponse>> GetStatistics()
 
         {

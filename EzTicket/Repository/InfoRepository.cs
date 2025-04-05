@@ -1,5 +1,5 @@
 ﻿using Data;
-using EzTickets.DTO.Public;
+using EzTickets.DTO.Admin;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
@@ -29,6 +29,7 @@ namespace EzTickets.Repository
 
         public async Task<List<ContactRequest>> GetAllRequests()
         {
+
             return await _context.ContactRequests.ToListAsync();
         }
 
