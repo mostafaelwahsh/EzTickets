@@ -4,15 +4,12 @@ using EzTickets.DTO.Public;
 using EzTickets.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Models;
 
 namespace EzTickets.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Produces("application/json")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _orderRepository;
@@ -29,10 +26,7 @@ namespace EzTickets.Controllers
             _mapper = mapper;
         }
 
-        #region GET Methods
-
-        // GET: api/event (for public view)
-        [HttpGet]
+        [HttpGet("all-orders")]
         public ActionResult<GeneralResponse> GetAllOrderPaginated([FromQuery] PaginationParams pagination)
         {
             try
@@ -90,10 +84,6 @@ namespace EzTickets.Controllers
                 IsPass = true,
             };
         }
-
-        #endregion
-
-        #region POST
 
         [Authorize]
         [HttpPost]
@@ -158,10 +148,6 @@ namespace EzTickets.Controllers
             return respone;
         }
 
-        #endregion
-
-        #region PUT
-
         [HttpPut("{id}")]
         public ActionResult<GeneralResponse> Update(int id, [FromBody] UpdateOrderDTO dto)
         {
@@ -188,10 +174,6 @@ namespace EzTickets.Controllers
                 IsPass = true,
             };
         }
-
-        #endregion
-
-        #region DELETE
 
         [Authorize]
         [HttpDelete("{id}")]
@@ -232,7 +214,5 @@ namespace EzTickets.Controllers
                 Data = "Order Is Deleted Successfully"
             };
         }
-
-        #endregion
     }
 }
